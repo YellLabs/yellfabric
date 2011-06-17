@@ -1,7 +1,7 @@
 import os
 from fabric.api import run, sudo, prefix, env
 
-class DummyContext():
+class _DummyContext():
     """
     Dummy context object that can be returned in the event that no prefix()
     context object is required.
@@ -31,7 +31,7 @@ def proxy(http_proxy=None, https_proxy=None):
         command = " ".join(["export"] + proxies)
         return prefix(command)
 
-    return DummyContext()
+    return _DummyContext()
 
 def virtualenv(virtualenv=None):
     """
@@ -42,4 +42,4 @@ def virtualenv(virtualenv=None):
         command = "source %s" % os.path.join(virtualenv, "bin/activate")
         return prefix(command)
 
-    return DummyContext()
+    return _DummyContext()
