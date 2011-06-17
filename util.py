@@ -32,3 +32,14 @@ def proxy(http_proxy=None, https_proxy=None):
         return prefix(command)
 
     return DummyContext()
+
+def virtualenv(virtualenv=None):
+    """
+    Context wrapper for activating Python virtual environments.
+    """
+
+    if virtualenv:
+        command = "source %s" % os.path.join(virtualenv, "bin/activate")
+        return prefix(command)
+
+    return DummyContext()
