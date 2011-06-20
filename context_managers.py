@@ -1,5 +1,5 @@
 import os
-from fabric.api import run, sudo, prefix, env
+from fabric.api import prefix
 
 class _DummyContext():
     """
@@ -28,8 +28,9 @@ def proxy(http_proxy=None, https_proxy=None):
         proxies.append('https_proxy="%s"' % https_proxy)
 
     if proxies:
-        command = " ".join(["export"] + proxies)
-        return prefix(command)
+        proxies.insert(0, "export")
+        cmd = " ".join(proxies)
+        return prefix(cmd)
 
     return _DummyContext()
 
@@ -39,7 +40,7 @@ def virtualenv(virtualenv=None):
     """
 
     if virtualenv:
-        command = "source %s" % os.path.join(virtualenv, "bin/activate")
-        return prefix(command)
+        cmd = "source %s" % os.path.join(virtualenv, "bin/activate")
+        return prefix(cmd)
 
     return _DummyContext()
