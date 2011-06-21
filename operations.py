@@ -3,9 +3,9 @@ import os
 from fabric.api import local, env, require, cd, runs_once
 from fabric.contrib.project import rsync_project
 
-def setup_paths():
+def fab_setup_paths():
     """
-    Setup path variables under fabric.api.env
+    Setup environment specific path variables under Fabric's `env`.
     """
 
     require("root", "vhost", "project_name")

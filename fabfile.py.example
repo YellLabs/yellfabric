@@ -18,8 +18,8 @@ env.sudo_user = "someuser"
 # Environment specific variables.
 def dev():
     env.hosts = ["one", "two"]
-    setup_paths()
+    fab_setup_paths()
 
 def prof():
     env.hosts = ["three", "four"]
-    setup_paths()
+    fab_setup_paths()
