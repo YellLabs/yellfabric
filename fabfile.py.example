@@ -1,0 +1,25 @@
+"""
+Example fabfile for an individual project.
+"""
+
+from fabric.api import env, runs_once
+
+import yellfabric.utils
+from yellfabric import defaults
+from yellfabric.operations import *
+from yellfabric.python import *
+
+# Common variables.
+env.scm_type = "git"
+env.scm_url = "git@github.com:someorg/someproject.git"
+env.scm_ref = "somebranch"
+env.sudo_user = "someuser"
+
+# Environment specific variables.
+def dev():
+    env.hosts = ["one", "two"]
+    setup_paths()
+
+def prof():
+    env.hosts = ["three", "four"]
+    setup_paths()
