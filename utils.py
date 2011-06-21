@@ -98,7 +98,7 @@ def template_context(vars):
 
     context = {}
     for var in vars:
-        context[var] = env.get(var) or prompt('settings %r:' % var)
+        context[var] = env.get(var) or prompt('Enter settings var for %r:' % var)
 
     return context
 
