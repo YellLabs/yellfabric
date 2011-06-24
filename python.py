@@ -26,7 +26,7 @@ def pip_requirements():
 
     with context_managers.proxy(env.http_proxy, env.https_proxy):
         with context_managers.virtualenv(env.virtualenv_path):
-            utils.run_sudo_local(cmd)
+            utils.run_sudo_local(cmd, env.sudo_user)
 
 def render_settings_template():
     """
