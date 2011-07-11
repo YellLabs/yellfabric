@@ -63,6 +63,16 @@ def migratedb():
     """
 
     require("virtualenv_path", "project_path", "sudo_user")
+
+    if hasattr(env, 'migrate_first'):
+        for app, args in env.migratedb_first.iteritems():
+            utils.django_manage_run(
+                env.virtualenv_path,
+                env.project_path,
+                ' '.join(['migrate', app, args]),
+                env.sudo_user
+            )
+
     utils.django_manage_run(env.virtualenv_path, env.project_path, "migrate", env.sudo_user)
 
 def fetch_render_copy(dirty=False):
