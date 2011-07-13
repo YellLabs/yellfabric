@@ -10,10 +10,9 @@ import os
 import shutil
 import tempfile
 
-from fabric.api import run, sudo, local
-from fabric.api import env, prompt, runs_once
+from fabric.api import env, prompt, runs_once, sudo
 
-def django_manage_run(virtualenv, path, cmd, user=None):
+def django_manage_run(virtualenv, path, cmd, user):
     """
     Run a Django management command from a Python virtual environment.
 
@@ -24,27 +23,7 @@ def django_manage_run(virtualenv, path, cmd, user=None):
     cmd = "python %s %s --noinput" % (manage_py, cmd)
 
     with context_managers.virtualenv(virtualenv):
-        run_sudo_local(cmd, user)
-
-def run_sudo_local(cmd, user=None):
-    """
-    Automagic wrapper for run(), sudo() and local() methods.
-
-        - cmd: Command to execute.
-        - user: User to execute commands as through sudo.
-
-    Chooses the correct action based upon:
-        - If the host is local then use local()
-        - If a user is supplied then use sudo()
-        - Otherwise use run()
-    """
-
-    if env.host_string in [ "localhost", "127.0.0.1" ]:
-        local(cmd)
-    elif user:
         sudo(cmd, user=user)
-    else:
-        run(cmd)
 
 def scm_get_ref(scm_type):
     if env.has_key("scm_ref"):

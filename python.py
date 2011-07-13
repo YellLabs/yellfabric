@@ -1,7 +1,7 @@
 import os
 import context_managers, utils, operations
 
-from fabric.api import env, require, cd
+from fabric.api import env, require, cd, runs_once, sudo
 
 def create_virtualenv():
     """
@@ -14,7 +14,7 @@ def create_virtualenv():
     with context_managers.proxy(env.http_proxy, env.https_proxy):
         # Needs to cd into a directory that the sudo user can temporarily write to.
         with cd("/tmp"):
-            utils.run_sudo_local(cmd, env.sudo_user)
+            sudo(cmd, user=env.sudo_user)
 
 def pip_requirements():
     """
@@ -26,7 +26,7 @@ def pip_requirements():
 
     with context_managers.proxy(env.http_proxy, env.https_proxy):
         with context_managers.virtualenv(env.virtualenv_path):
-            utils.run_sudo_local(cmd, env.sudo_user)
+            sudo(cmd, user=env.sudo_user)
 
 def render_settings_template():
     """
@@ -47,7 +47,7 @@ def refresh_wsgi():
 
     require("wsgi_path", "sudo_user")
     cmd = "touch %s" % env.wsgi_path
-    utils.run_sudo_local(cmd, env.sudo_user)
+    sudo(cmd, user=env.sudo_user)
 
 def syncdb():
     """
