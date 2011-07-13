@@ -10,7 +10,7 @@ import os
 import shutil
 import tempfile
 
-from fabric.api import env, prompt, runs_once, sudo
+from fabric.api import env, prompt, runs_once, sudo, local
 
 def django_manage_run(virtualenv, path, cmd, user):
     """
