@@ -49,6 +49,7 @@ def refresh_wsgi():
     cmd = "touch %s" % env.wsgi_path
     sudo(cmd, user=env.sudo_user)
 
+@runs_once
 def syncdb():
     """
     Perform 'syncdb' action for a Django project.
@@ -57,6 +58,7 @@ def syncdb():
     require("virtualenv_path", "project_path", "sudo_user")
     utils.django_manage_run(env.virtualenv_path, env.project_path, "syncdb", env.sudo_user)
 
+@runs_once
 def migratedb():
     """
     Perform 'migrate' action for a Django project.
