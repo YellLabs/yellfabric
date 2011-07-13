@@ -1,5 +1,3 @@
-import glob
-import os.path
 import os
 import tempfile
 import shutil
