@@ -10,6 +10,13 @@ from fabric.contrib.project import rsync_project
 from utils import template_context, template_to_file
 from fabric.operations import prompt
 
+def use_maven_build():
+    try:
+        env.deploy_war_file = glob.glob("target/*.war")[0]
+        env.app_config_archive = glob.glob("target/*-config.tar.gz")[0]
+    except IndexError:
+         sys.exit("Failed to find maven build products in target directory")
+
 @runs_once
 def setup_paths():
     require("java_root", "java_conf", "java_log", "project_name")
@@ -19,6 +26,7 @@ def setup_paths():
     env.app_config_archive = "%s-config.tar.gz" % env.project_name
     env.app_config_dir = os.path.join(env.java_conf, env.project_name)
     env.log_dir = os.path.join(env.java_log, env.project_name)
+    env.deploy_war_file = env.war_file
 
 @runs_once
 def render_settings_template():
@@ -49,7 +57,7 @@ def deploy_java():
     require("app_config_dir", "deploy_config_dir")
     rsync_as_user("%s/" % env.app_config_dir, "%s/" % env.deploy_config_dir, env.sudo_user, delete = True)
     require("war_file", "war_path")
-    rsync_as_user(env.war_path, env.war_file, env.sudo_user)
+    rsync_as_user(env.war_path, env.deploy_war_file, env.sudo_user)
     
     require("project_name")
     sudo("/usr/local/sbin/deploy_tomcat_webapp.py %s" % env.project_name, shell = False)
