@@ -14,10 +14,10 @@ from fabric.operations import prompt
 def setup_paths():
     require("java_root", "project_name")
 
-    env.log_dir = "/var/log/tomcat6/%s" % env.artifact_id
-    env.war_file_name = '%s.war' % env.artifact_id
+    env.log_dir = os.path.join("/var/log/tomcat6", env.project_name)
+    env.war_file_name = "%s.war" % env.project_name
     env.war_file = os.path.join(env.java_root, env.war_file_name)
-    env.app_config_dir = '/etc/yell/%s' % env.artifact_id
+    env.app_config_dir = os.path.join("/etc/yell", env.project_name)
 
 def rsync_as_user(remote_dir, local_dir, user, delete = False, exclude = ()):
     extra_opts = '--rsync-path="sudo -u %s rsync"' % user
@@ -47,5 +47,6 @@ def deploy_java():
         rsync_as_user("%s/" % env.app_config_dir, "%s/" % dest_config_dir, env.sudo_user)
         rsync_as_user(env.war_file, env.war_file_name, env.sudo_user, delete = True)
 
-        sudo("/usr/local/sbin/deploy_tomcat_webapp.py %s" % env.artifact_id, shell = False)
+        require("project_name")
+        sudo("/usr/local/sbin/deploy_tomcat_webapp.py %s" % env.project_name, shell = False)
     shutil.rmtree(workdir)
