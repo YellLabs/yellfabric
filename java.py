@@ -4,22 +4,23 @@ import shutil
 import sys
 import tempfile
 
-from fabric.api import local, env, sudo, lcd, run, runs_once
+from fabric.api import local, env, sudo, lcd, run, runs_once, require
 from fabric.contrib.project import rsync_project
 
 from utils import template_to_file
 from fabric.operations import prompt
+
+def setup_paths():
+    env.log_dir = "/var/log/tomcat6/%s" % env.artifact_id
+    env.war_file_name = '%s.war' % env.artifact_id
+    env.war_file = '/usr/share/java/wars/%s' % env.war_file_name
+    env.app_config_dir = '/etc/yell/%s' % env.artifact_id
 
 @runs_once
 def _prepare():
     """
     Prepare the files to upload
     """
-    env.log_dir = "/var/log/tomcat6/%s" % env.artifact_id
-    env.war_file_name = '%s.war' % env.artifact_id
-    env.war_file = '/usr/share/java/wars/%s' % env.war_file_name
-    env.app_config_dir = '/etc/yell/%s' % env.artifact_id
-    
     workdir = tempfile.mkdtemp()
     local("tar -C'%s' -xzf '%s'" % (workdir, env.deploy_config_archive))
     src_config_dir = os.path.join(workdir, 'config')
@@ -38,7 +39,8 @@ def rsync_as_user(remote_dir, local_dir, user, delete = False, exclude = ()):
 def deploy_java():
     _prepare()
     
-    rsync_as_user("%s/" % env.app_config_dir, "%s/" % env.deploy_config_dir, "labs.deploy", delete = True)
-    rsync_as_user(env.war_file, env.deploy_war_file, "labs.deploy")
+    require("sudo_user")
+    rsync_as_user("%s/" % env.app_config_dir, "%s/" % env.deploy_config_dir, env.sudo_user, delete = True)
+    rsync_as_user(env.war_file, env.deploy_war_file, env.sudo_user)
     
     sudo("/usr/local/sbin/deploy_tomcat_webapp.py %s" % env.artifact_id, shell = False)
