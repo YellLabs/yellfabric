@@ -43,8 +43,9 @@ def deploy_java():
                              os.path.join(dest_config_dir, src),
                              env)
 
-        rsync_as_user("%s/" % env.app_config_dir, "%s/" % dest_config_dir, "labs.deploy")
-        rsync_as_user(env.war_file, env.war_file_name, "labs.deploy", delete = True)
+        require("sudo_user")
+        rsync_as_user("%s/" % env.app_config_dir, "%s/" % dest_config_dir, env.sudo_user)
+        rsync_as_user(env.war_file, env.war_file_name, env.sudo_user, delete = True)
 
         sudo("/usr/local/sbin/deploy_tomcat_webapp.py %s" % env.artifact_id, shell = False)
     shutil.rmtree(workdir)
