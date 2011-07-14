@@ -1,3 +1,5 @@
+import glob
+import os.path
 import os
 import tempfile
 import shutil
@@ -14,9 +16,9 @@ def init_settings():
     env.war_file = '/usr/share/java/wars/%s' % env.war_file_name
     env.app_config_dir = '/etc/yell/%s' % env.artifact_id
 
-def rsync_as_user(remote_dir, local_dir, user, exclude = ()):
+def rsync_as_user(remote_dir, local_dir, user, delete = False, exclude = ()):
     extra_opts = '--rsync-path="sudo -u %s rsync"' % user
-    rsync_project(remote_dir, local_dir, exclude = exclude, delete = True, extra_opts = extra_opts)
+    rsync_project(remote_dir, local_dir, exclude = exclude, delete = delete, extra_opts = extra_opts)
 
 def deploy():
     init_settings()
@@ -40,7 +42,7 @@ def deploy():
                              env)
 
         rsync_as_user("%s/" % env.app_config_dir, "%s/" % dest_config_dir, "labs.deploy")
-        rsync_as_user(env.war_file, env.war_file_name, "labs.deploy")
+        rsync_as_user(env.war_file, env.war_file_name, "labs.deploy", delete = True)
 
         sudo("/usr/local/sbin/deploy_tomcat_webapp.py %s" % env.artifact_id, shell = False)
     shutil.rmtree(workdir)
