@@ -24,7 +24,6 @@ def rsync_as_user(remote_dir, local_dir, user, delete = False, exclude = ()):
     rsync_project(remote_dir, local_dir, exclude = exclude, delete = delete, extra_opts = extra_opts)
 
 def deploy_java():
-    init_settings()
     prompt('Base URL of version to deploy:', 'base_url')
 
     war_url = '%s.war' % env.base_url
