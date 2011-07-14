@@ -5,7 +5,7 @@ from fabric.api import env, require, cd, runs_once
 
 @runs_once
 def setup_paths():
-    require("python_root", "vhost", "project_name")
+    require("python_root", "project_name", "vhost")
 
     env.vhost_path = os.path.join(env.python_root, env.vhost)
     env.project_path = os.path.join(env.vhost_path, env.project_name)

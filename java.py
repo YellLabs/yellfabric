@@ -10,11 +10,13 @@ from fabric.contrib.project import rsync_project
 from utils import template_to_file
 from fabric.operations import prompt
 
+@runs_once
 def setup_paths():
-    env.log_dir = "/var/log/tomcat6/%s" % env.artifact_id
-    env.war_file_name = '%s.war' % env.artifact_id
-    env.war_file = '/usr/share/java/wars/%s' % env.war_file_name
-    env.app_config_dir = '/etc/yell/%s' % env.artifact_id
+    require("java_root", "java_conf", "project_name")
+
+    env.war_file = "%s.war" % env.project_name
+    env.war_path = os.path.join(env.java_root, env.war_file)
+    env.app_config_dir = os.path.join(env.java_conf, env.project_name)
 
 @runs_once
 def _prepare():
@@ -41,6 +43,6 @@ def deploy_java():
     
     require("sudo_user")
     rsync_as_user("%s/" % env.app_config_dir, "%s/" % env.deploy_config_dir, env.sudo_user, delete = True)
-    rsync_as_user(env.war_file, env.deploy_war_file, env.sudo_user)
+    rsync_as_user(env.war_path, env.deploy_path, env.sudo_user)
     
     sudo("/usr/local/sbin/deploy_tomcat_webapp.py %s" % env.artifact_id, shell = False)

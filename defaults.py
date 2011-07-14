@@ -6,6 +6,7 @@ env.python_bin = "python2.6"
 # Root directory for Python and Java deployments.
 env.python_root = "/srv/www/httpd"
 env.java_root = "/usr/share/java/wars"
+env.java_conf = "/etc/yell"
 
 # Disable bash login simulation. It generates errors when used with sudo
 # because the sudo'ed user doesn't have access to the original user's
