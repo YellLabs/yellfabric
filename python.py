@@ -1,7 +1,7 @@
 import os
 import context_managers, utils, operations
 
-from fabric.api import env, require, cd
+from fabric.api import env, require, cd, runs_once
 
 @runs_once
 def setup_paths():
