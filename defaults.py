@@ -1,15 +1,16 @@
 from fabric.api import env
 
 # Default Python interpreter when creating virtual environments.
-env.python_bin = 'python2.6'
+env.python_bin = "python2.6"
 
-# Root path of Apache's vhosts.
-env.root = '/srv/www/httpd'
+# Root directory for Python and Java deployments.
+env.python_root = "/srv/www/httpd"
+env.java_root = "/usr/share/java/wars"
 
 # Disable bash login simulation. It generates errors when used with sudo
 # because the sudo'ed user doesn't have access to the original user's
 # home directory and profile files.
-env.shell = '/bin/bash -c'
+env.shell = "/bin/bash -c"
 
 # Default to none.
 env.sudo_user = None

@@ -10,10 +10,13 @@ from fabric.contrib.project import rsync_project
 from utils import template_to_file
 from fabric.operations import prompt
 
-def init_settings():
+@runs_once
+def setup_paths():
+    require("java_root", "project_name")
+
     env.log_dir = "/var/log/tomcat6/%s" % env.artifact_id
     env.war_file_name = '%s.war' % env.artifact_id
-    env.war_file = '/usr/share/java/wars/%s' % env.war_file_name
+    env.war_file = os.path.join(env.java_root, env.war_file_name)
     env.app_config_dir = '/etc/yell/%s' % env.artifact_id
 
 def rsync_as_user(remote_dir, local_dir, user, delete = False, exclude = ()):
