@@ -81,7 +81,6 @@ def template_context(vars):
 
     return context
 
-@runs_once
 def template_to_file(source, target, context):
     """
     Populate templated local_settings and place it in the tempdir to be rsynced.

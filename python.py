@@ -3,6 +3,16 @@ import context_managers, utils, operations
 
 from fabric.api import env, require, cd, runs_once, sudo
 
+@runs_once
+def setup_paths():
+    require("python_root", "project_name", "vhost")
+
+    env.vhost_path = os.path.join(env.python_root, env.vhost)
+    env.project_path = os.path.join(env.vhost_path, env.project_name)
+    env.virtualenv_path = os.path.join(env.vhost_path, "%s-env" % env.project_name)
+    env.requirements_path = os.path.join(env.project_path, "requirements", "project.txt")
+    env.wsgi_path = os.path.join(env.project_path, "deploy", "%s.wsgi" % env.project_name)
+
 def create_virtualenv():
     """
     Create a Python virtual environment.

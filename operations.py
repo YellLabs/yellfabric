@@ -1,20 +1,25 @@
 import os
 
+import java, python
+
 from fabric.api import local, env, require, cd, runs_once
+from fabric.utils import abort
 from fabric.contrib.project import rsync_project
 
+@runs_once
 def fab_setup_paths():
     """
-    Setup environment specific path variables under Fabric's `env`.
+    Wrapper for setting up language dependent paths.
     """
 
-    require("root", "vhost", "project_name")
+    require("lang")
 
-    env.vhost_path = os.path.join(env.root, env.vhost)
-    env.project_path = os.path.join(env.vhost_path, env.project_name)
-    env.virtualenv_path = os.path.join(env.vhost_path, "%s-env" % env.project_name)
-    env.requirements_path = os.path.join(env.project_path, "requirements", "project.txt")
-    env.wsgi_path = os.path.join(env.project_path, "deploy", "%s.wsgi" % env.project_name)
+    if env.lang == "python":
+        python.setup_paths()
+    elif env.lang == "java":
+        java.setup_paths()
+    else:
+        abort("Project language of %r unknown" % env.lang)
 
 def rsync_from_local():
     """
