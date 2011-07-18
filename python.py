@@ -87,26 +87,25 @@ def migratedb():
 
     utils.django_manage_run(env.virtualenv_path, env.project_path, "migrate", env.sudo_user)
 
-def fetch_render_copy(dirty=False):
+def fetch_render_copy(ref=None, dirty=False):
     """
     Fetch source code, render settings file, push remotely and delete checkout.
     """
 
     require("scm_type", "scm_url")
 
-    scm_ref = utils.scm_get_ref(env.scm_type)
-    env.tempdir = utils.fetch_source(env.scm_type, env.scm_url, scm_ref, dirty)
+    env.tempdir = utils.fetch_source(env.scm_type, env.scm_url, ref, dirty)
     render_settings_template()
     operations.rsync_from_local()
     utils.delete_source(env.tempdir)
 
-def deploy_django(dirty=False):
+def deploy_django(ref=None, dirty=False):
     """
     Standard Django deployment actions.
     """
 
     create_virtualenv()
-    fetch_render_copy(dirty)
+    fetch_render_copy(ref, dirty)
     pip_requirements()
     migratedb()
     refresh_wsgi()

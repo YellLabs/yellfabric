@@ -10,7 +10,7 @@ import os
 import shutil
 import tempfile
 
-from fabric.api import env, prompt, runs_once, sudo, local
+from fabric.api import env, prompt, runs_once, sudo, local, puts
 
 def django_manage_run(virtualenv, path, cmd, user):
     """
@@ -25,15 +25,17 @@ def django_manage_run(virtualenv, path, cmd, user):
     with context_managers.virtualenv(virtualenv):
         sudo(cmd, user=user)
 
+@runs_once
 def scm_get_ref(scm_type):
-    if env.has_key("scm_ref"):
-        return env.scm_ref
+    if scm_type.lower() == "svn":
+        puts("SCM reference must be a 'path' relative to the project's root URL.")
+        default = "trunk"
+    elif scm_type.lower() == "git":
+        puts("SCM reference must be a named 'branch', 'tag' or 'revision'.")
+        default = "master"
 
-    if scm_type in ["svn", "SVN"]:
-        return "trunk"
-
-    if scm_type in ["git", "GIT"]:
-        return "dev"
+    ref = prompt("SCM ref", default=default)
+    return ref
 
 @runs_once
 def fetch_source(scm_type, scm_url, scm_ref=None, dirty=False):
@@ -45,13 +47,12 @@ def fetch_source(scm_type, scm_url, scm_ref=None, dirty=False):
         tempdir = tempfile.mkdtemp()
         os.chmod(tempdir, 0755)
 
-        if scm_type in [ "svn", "SVN" ]:
-            if not scm_ref:
-                scm_ref = "trunk"
+        if not scm_ref:
+            scm_ref = scm_get_ref(scm_type)
+
+        if scm_type.lower() == "svn":
             cmd = "svn checkout --quiet --config-option config:miscellany:use-commit-times=yes %s/%s %s" % (env.scm_url, scm_ref, tempdir)
-        elif scm_type in [ "git", "GIT" ]:
-            if not scm_ref:
-                scm_ref = "dev"
+        elif scm_type.lower() == "git":
             cmd = "git clone -b %s %s %s" % (scm_ref, env.scm_url, tempdir)
 
         local(cmd)
