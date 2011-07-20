@@ -1,8 +1,7 @@
 import os
 import context_managers, utils, operations
 
-from fabric.api import env, require, cd, runs_once, sudo
-
+from fabric.api import env, require, cd, runs_once, sudo 
 @runs_once
 def setup_paths():
     require("python_root", "project_name", "vhost")
@@ -86,6 +85,14 @@ def migratedb():
             )
 
     utils.django_manage_run(env.virtualenv_path, env.project_path, "migrate", env.sudo_user)
+
+@runs_once
+def create_superuser():
+    """
+    Create a django superuser
+    """
+    require("virtualenv_path", "project_path", "sudo_user")
+    utils.django_manage_run(env.virtualenv_path, env.project_path, "createsuperuser --username=admin --email=noreply@yellgroup.com", env.sudo_user, flag='')
 
 def fetch_render_copy(ref=None, dirty=False):
     """
