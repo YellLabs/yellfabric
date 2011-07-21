@@ -1,18 +1,15 @@
 import os
 from fabric.api import prefix
+from contextlib import contextmanager
 
-class _DummyContext():
+@contextmanager
+def _DummyContext():
     """
     Dummy context object that can be returned in the event that no prefix()
     context object is required.
     """
 
-    def __init__(self):
-        pass
-    def __enter__(self):
-        pass
-    def __exit__(self):
-        pass
+    return
 
 def proxy(http_proxy=None, https_proxy=None):
     """
