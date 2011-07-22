@@ -10,7 +10,7 @@ import os
 import shutil
 import tempfile
 
-from fabric.api import env, prompt, runs_once, sudo, local, puts
+from fabric.api import env, prompt, runs_once, sudo, local, puts, lcd
 
 def django_manage_run(virtualenv, path, cmd, user, flag="--noinput"):
     """
@@ -53,9 +53,13 @@ def fetch_source(scm_type, scm_url, scm_ref=None, dirty=False):
         if scm_type.lower() == "svn":
             cmd = "svn checkout --quiet --config-option config:miscellany:use-commit-times=yes %s/%s %s" % (env.scm_url, scm_ref, tempdir)
         elif scm_type.lower() == "git":
-            cmd = "git clone -b %s %s %s" % (scm_ref, env.scm_url, tempdir)
+            cmd = "git clone %s %s" % (env.scm_url, tempdir)
 
         local(cmd)
+
+        if scm_type.lower() == "git":
+            with lcd(tempdir):
+                local("git checkout -b %s %s" % (scm_ref, scm_ref))
 
     return tempdir
 
