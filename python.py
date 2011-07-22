@@ -75,7 +75,7 @@ def migratedb():
 
     require("virtualenv_path", "project_path", "sudo_user")
 
-    if hasattr(env, 'migrate_first'):
+    if env.has_key("migratedb_first"):
         for app, args in env.migratedb_first.iteritems():
             utils.django_manage_run(
                 env.virtualenv_path,
