@@ -20,3 +20,5 @@ I was originally hoping to avoid global `env` variables and have each method acc
 1. Add some form of version checking between this common project and the individual projects that utilise it, to enforce feature compatibility.
 1. Use `env` globals less. If at all possible. I dislike this assumed magic.
 1. Move individual project variables like hostnames out to `.ini` files. We shouldn't have to re-tag the project when we add more frontend nodes.
+1. Tidy up tempdir after Java deployments.
+1. Abort if rsync skips any source files.
