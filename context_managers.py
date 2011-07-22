@@ -9,7 +9,7 @@ def _DummyContext():
     context object is required.
     """
 
-    return
+    yield
 
 def proxy(http_proxy=None, https_proxy=None):
     """
