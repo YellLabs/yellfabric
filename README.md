@@ -22,3 +22,5 @@ I was originally hoping to avoid global `env` variables and have each method acc
 1. Move individual project variables like hostnames out to `.ini` files. We shouldn't have to re-tag the project when we add more frontend nodes.
 1. Tidy up tempdir after Java deployments.
 1. Abort if rsync skips any source files.
+1. Argument for turning on DEBUG mode in Django deployments.
+1. Possibly the same for increasing log verbosity in Java deployments.
