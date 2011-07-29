@@ -13,7 +13,6 @@ env.lang = "python"
 env.project_name = "example"
 env.scm_type = "git"
 env.scm_url = "git@github.com:someorg/someproject.git"
-env.scm_ref = "somebranch"
 env.sudo_user = "someuser"
 
 # Environment specific variables.
