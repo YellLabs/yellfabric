@@ -24,7 +24,7 @@ def django_manage_run(virtualenv, path, command, user, interactive=False):
     """
 
     manage_py = os.path.join(path, "manage.py")
-    cmd = "python %s %s %s" % (manage_py, command)
+    cmd = "python %s %s" % (manage_py, command)
 
     if not interactive:
         cmd = "%s --noinput" % cmd
