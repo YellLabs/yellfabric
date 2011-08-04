@@ -87,12 +87,21 @@ def migratedb():
     utils.django_manage_run(env.virtualenv_path, env.project_path, "migrate", env.sudo_user)
 
 @runs_once
-def create_superuser():
+def create_superuser(username=None, email=None):
     """
     Create a django superuser
     """
+
     require("virtualenv_path", "project_path", "sudo_user")
-    utils.django_manage_run(env.virtualenv_path, env.project_path, "createsuperuser --username=admin --email=noreply@yellgroup.com", env.sudo_user, flag='')
+    cmd = "createsuperuser"
+
+    if username:
+        cmd = "%s --username=%s" % (cmd, username)
+
+    if email:
+        cmd = "%s --email=%s" % (cmd, email)
+
+    utils.django_manage_run(env.virtualenv_path, env.project_path, cmd, env.sudo_user, interactive=True)
 
 def fetch_render_copy(ref=None, dirty=False):
     """

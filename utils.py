@@ -12,15 +12,22 @@ import tempfile
 
 from fabric.api import env, prompt, runs_once, sudo, local, puts, lcd
 
-def django_manage_run(virtualenv, path, cmd, user, flag="--noinput"):
+def django_manage_run(virtualenv, path, command, user, interactive=False):
     """
     Run a Django management command from a Python virtual environment.
 
-        - cmd: Management command to run.
+        - virtualenv: Absolute path of Python virtualenv.
+        - path: Absolute path of Django project.
+        - command: Management command to run.
+        - user: User to sudo as.
+        - interactive: Whether to honour interactive prompts.
     """
 
     manage_py = os.path.join(path, "manage.py")
-    cmd = "python %s %s %s" % (manage_py, cmd, flag)
+    cmd = "python %s %s" % (manage_py, command)
+
+    if not interactive:
+        cmd = "%s --noinput" % cmd
 
     with context_managers.virtualenv(virtualenv):
         sudo(cmd, user=user)
