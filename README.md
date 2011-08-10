@@ -24,3 +24,4 @@ I was originally hoping to avoid global `env` variables and have each method acc
 1. Abort if rsync skips any source files.
 1. Argument for turning on DEBUG mode in Django deployments.
 1. Possibly the same for increasing log verbosity in Java deployments.
+1. Check presence of WSGI file before touching. Will catch naming issues.
