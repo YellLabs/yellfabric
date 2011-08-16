@@ -33,6 +33,11 @@ def pip_requirements():
     require("virtualenv_path", "requirements_path", "http_proxy", "https_proxy", "sudo_user")
     cmd = "pip install --quiet --requirement %s" % env.requirements_path
 
+    # append packages url if specified
+    packages_url = env.settings_vars("packages_url", None)
+    if packages_url is not None:
+        cmd += cmd + " -f %s" % packages_url
+
     with context_managers.proxy(env.http_proxy, env.https_proxy):
         with context_managers.virtualenv(env.virtualenv_path):
             sudo(cmd, user=env.sudo_user)
