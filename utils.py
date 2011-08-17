@@ -11,7 +11,12 @@ import os
 import shutil
 import tempfile
 
+from string import replace
+from xml.dom import minidom
+
 from fabric.api import env, prompt, runs_once, sudo, local, puts, lcd
+from fabric.context_managers import hide
+#from fabric.contrib.files import append
 
 
 def django_manage_run(virtualenv, path, command, user, interactive=False):
@@ -36,16 +41,71 @@ def django_manage_run(virtualenv, path, command, user, interactive=False):
 
 
 @runs_once
-def scm_get_ref(scm_type):
+def scm_get_ref(scm_type, use_default=False):
     if scm_type.lower() == "svn":
-        puts("SCM reference must be a path relative to the project's root URL")
+        if not use_default:
+            puts("SCM reference must be a path " \
+                "relative to the project's root URL.")
         default = "trunk"
     elif scm_type.lower() == "git":
-        puts("SCM reference must be a named 'branch', 'tag' or 'revision'.")
+        if not use_default:
+            puts("SCM reference must be a named " \
+                "'branch', 'tag' or 'revision'.")
         default = "master"
 
-    ref = prompt("SCM ref", default=default)
+    if use_default:
+        ref = default
+    else:
+        ref = prompt("SCM ref", default=default)
+
     return ref
+
+
+@runs_once
+def scm_get_info(scm_type, scm_ref=None, directory=False):
+
+    scm_info = None
+
+    if not scm_ref:
+        scm_ref = scm_get_ref(scm_type, True)
+
+    if not directory:
+        directory = '.'
+
+    if scm_type.lower() == "svn":
+        with lcd(directory):
+            with hide("running"):
+                xml = local(
+                    "svn info --xml",
+                    capture=True,
+                )
+                dom = minidom.parseString(xml)
+                scm_info = {
+                    "type": scm_type,
+                    "rev": dom.getElementsByTagName("entry")[0] \
+                        .getAttribute("revision"),
+                    "url": dom.getElementsByTagName("url")[0] \
+                        .firstChild.wholeText,
+                }
+
+    elif scm_type.lower() == "git":
+        with lcd(directory):
+            with hide("running"):
+                revision = local(
+                    "git describe --always",
+                    capture=True,
+                )
+                repo = local(
+                    "git remote -v | grep fetch",
+                    capture=True,
+                )
+                scm_info = {
+                    "type": scm_type,
+                    "rev": revision,
+                    "url": repo,
+                }
+
+    return scm_info
 
 
 @runs_once
@@ -76,6 +136,23 @@ def fetch_source(scm_type, scm_url, scm_ref=None, dirty=False):
             with lcd(tempdir):
                 if scm_ref != "master":
                     local("git checkout -b %s %s" % (scm_ref, scm_ref))
+
+        #
+        # Write out the version info
+        #
+        with lcd(tempdir):
+            scm_info = scm_get_info(scm_type, scm_ref, tempdir)
+            filename = "version.json"
+            local("echo \"%s\" > %s" \
+                % (
+                    replace(
+                        str(scm_info),
+                        ' (fetch)',
+                        '',
+                    ),
+                    filename,
+                )
+            )
 
     return tempdir
 

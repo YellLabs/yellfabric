@@ -20,6 +20,13 @@ def setup_paths():
         os.path.join(env.project_path, "deploy", "%s.wsgi" % env.project_name)
 
 
+def scm_echo_info():
+
+    require("scm_type")
+
+    print utils.scm_get_info(env.scm_type)
+
+
 def create_virtualenv():
     """
     Create a Python virtual environment.
