@@ -1,7 +1,8 @@
 """
 Generic utility classes for Fabric.
 
-These should act as standalone functions and not modify Fabric's "env" directly.
+These should act as standalone functions and not modify Fabric's "env"
+directly.
 """
 
 import context_managers
@@ -11,6 +12,7 @@ import shutil
 import tempfile
 
 from fabric.api import env, prompt, runs_once, sudo, local, puts, lcd
+
 
 def django_manage_run(virtualenv, path, command, user, interactive=False):
     """
@@ -32,10 +34,11 @@ def django_manage_run(virtualenv, path, command, user, interactive=False):
     with context_managers.virtualenv(virtualenv):
         sudo(cmd, user=user)
 
+
 @runs_once
 def scm_get_ref(scm_type):
     if scm_type.lower() == "svn":
-        puts("SCM reference must be a 'path' relative to the project's root URL.")
+        puts("SCM reference must be a path relative to the project's root URL")
         default = "trunk"
     elif scm_type.lower() == "git":
         puts("SCM reference must be a named 'branch', 'tag' or 'revision'.")
@@ -44,11 +47,12 @@ def scm_get_ref(scm_type):
     ref = prompt("SCM ref", default=default)
     return ref
 
+
 @runs_once
 def fetch_source(scm_type, scm_url, scm_ref=None, dirty=False):
     if dirty:
         tempdir = os.tempdir.dirname(os.tempdir.abstempdir(__file__))
-    elif env.has_key("tempdir"):
+    elif "tempdir" in env:
         tempdir = env.tempdir
     else:
         tempdir = tempfile.mkdtemp()
@@ -58,7 +62,15 @@ def fetch_source(scm_type, scm_url, scm_ref=None, dirty=False):
             scm_ref = scm_get_ref(scm_type)
 
         if scm_type.lower() == "svn":
-            local("svn checkout --quiet --config-option config:miscellany:use-commit-times=yes %s/%s %s" % (env.scm_url, scm_ref, tempdir))
+            local(
+                "svn checkout --quiet --config-option " \
+                    "config:miscellany:use-commit-times=yes %s/%s %s"
+                    % (
+                        env.scm_url,
+                        scm_ref,
+                        tempdir,
+                    ),
+            )
         elif scm_type.lower() == "git":
             local("git clone %s %s" % (env.scm_url, tempdir))
             with lcd(tempdir):
@@ -66,6 +78,7 @@ def fetch_source(scm_type, scm_url, scm_ref=None, dirty=False):
                     local("git checkout -b %s %s" % (scm_ref, scm_ref))
 
     return tempdir
+
 
 def delete_source(tempdir, dirty=False):
     if dirty:
@@ -75,6 +88,7 @@ def delete_source(tempdir, dirty=False):
         return
 
     shutil.rmtree(tempdir)
+
 
 @runs_once
 def template_context(vars):
@@ -86,13 +100,16 @@ def template_context(vars):
 
     context = {}
     for var in vars:
-        context[var] = env.get(var) or prompt('Enter settings var for %r:' % var)
+        context[var] = \
+            env.get(var) or prompt('Enter settings var for %r:' % var)
 
     return context
 
+
 def template_to_file(source, target, context):
     """
-    Populate templated local_settings and place it in the tempdir to be rsynced.
+    Populate templated local_settings and place it in the tempdir to be
+    rsynced.
     """
 
     with open(target, "w") as target_file:

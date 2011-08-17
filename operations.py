@@ -1,10 +1,10 @@
-import os
+import java
+import python
 
-import java, python
-
-from fabric.api import local, env, require, cd, runs_once
+from fabric.api import env, require, runs_once
 from fabric.utils import abort
 from fabric.contrib.project import rsync_project
+
 
 @runs_once
 def fab_setup_paths():
@@ -21,6 +21,7 @@ def fab_setup_paths():
     else:
         abort("Project language of %r unknown" % env.lang)
 
+
 def rsync_from_local():
     """
     Push a local checkout of the code to a remote machine.
@@ -28,7 +29,7 @@ def rsync_from_local():
 
     require("tempdir", "project_path", "sudo_user")
 
-    rsync_exclude = [ "*.pyc" ]
+    rsync_exclude = ["*.pyc"]
     rsync_opts = []
 
     if env.get("rsync_exclude"):
