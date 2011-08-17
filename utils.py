@@ -11,11 +11,12 @@ import os
 import shutil
 import tempfile
 
+from string import replace
 from xml.dom import minidom
 
 from fabric.api import env, prompt, runs_once, sudo, local, puts, lcd
 from fabric.context_managers import hide
-from fabric.contrib.files import append
+#from fabric.contrib.files import append
 
 
 def django_manage_run(virtualenv, path, command, user, interactive=False):
@@ -142,8 +143,16 @@ def fetch_source(scm_type, scm_url, scm_ref=None, dirty=False):
         with lcd(tempdir):
             scm_info = scm_get_info(scm_type, scm_ref, tempdir)
             filename = "version.json"
-            local("touch %s/%s", tempdir, filename)
-            append("%s/%s", scm_info, False, True, False)
+            local("echo \"%s\" > %s" \
+                % (
+                    replace(
+                        str(scm_info),
+                        ' (fetch)',
+                        '',
+                    ),
+                    filename,
+                )
+            )
 
     return tempdir
 
