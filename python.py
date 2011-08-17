@@ -65,7 +65,7 @@ def pip_requirements():
     # append packages url if specified
     packages_url = env.settings_vars("packages_url", None)
     if packages_url is not None:
-        cmd += cmd + " -f %s" % packages_url
+        cmd += " -f %s" % packages_url
 
     with context_managers.proxy(env.http_proxy, env.https_proxy):
         with context_managers.virtualenv(env.virtualenv_path):
