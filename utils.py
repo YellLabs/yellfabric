@@ -142,7 +142,7 @@ def fetch_source(scm_type, scm_url, scm_ref=None, dirty=False):
         #
         with lcd(tempdir):
             scm_info = scm_get_info(scm_type, scm_ref, tempdir)
-            filename = "version.json"
+            filename = "version"
             local("echo \"%s\" > %s" \
                 % (
                     replace(
