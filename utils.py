@@ -111,7 +111,7 @@ def scm_get_info(scm_type, scm_ref=None, directory=False):
 @runs_once
 def fetch_source(scm_type, scm_url, scm_ref=None, dirty=False):
     if dirty:
-        tempdir = os.tempdir.dirname(os.tempdir.abstempdir(__file__))
+        tempdir = os.path.abspath(os.getcwd())
     elif "tempdir" in env:
         tempdir = env.tempdir
     else:
@@ -137,22 +137,22 @@ def fetch_source(scm_type, scm_url, scm_ref=None, dirty=False):
                 if scm_ref != "master":
                     local("git checkout -b %s %s" % (scm_ref, scm_ref))
 
-        #
-        # Write out the version info
-        #
-        with lcd(tempdir):
-            scm_info = scm_get_info(scm_type, scm_ref, tempdir)
-            filename = "version"
-            local("echo \"%s\" > %s" \
-                % (
-                    replace(
-                        str(scm_info),
-                        ' (fetch)',
-                        '',
-                    ),
-                    filename,
-                )
+    #
+    # Write out the version info
+    #
+    with lcd(tempdir):
+        scm_info = scm_get_info(scm_type, scm_ref, tempdir)
+        filename = "version"
+        local("echo \"%s\" > %s" \
+            % (
+                replace(
+                    str(scm_info),
+                    ' (fetch)',
+                    '',
+                ),
+                filename,
             )
+        )
 
     return tempdir
 
