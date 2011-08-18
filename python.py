@@ -3,7 +3,7 @@ import context_managers
 import utils
 import operations
 
-from fabric.api import env, require, cd, runs_once, sudo
+from fabric.api import env, require, cd, runs_once, sudo, abort
 
 
 @runs_once
@@ -72,7 +72,7 @@ def pip_requirements():
             sudo(cmd, user=env.sudo_user)
 
 
-def render_settings_template():
+def render_settings_template(debug=False):
     """
     Render a settings file from a template in a local checkout.
     """
@@ -82,6 +82,15 @@ def render_settings_template():
     source = os.path.join(env.tempdir, "local_settings.py.template")
     target = os.path.join(env.tempdir, "local_settings.py")
     context = utils.template_context(env.settings_vars)
+
+    # Treat as a string even though it's going to be rendered as unquoted.
+    # Clobbers anything from env in the project's own fabfile because the
+    # default should always be False.
+    if "%s" % debug in ["True", "False"]:
+        context["DEBUG"] = debug
+    else:
+        abort("local_settings.DEBUG may only be True or False")
+
     utils.template_to_file(source, target, context)
 
 
@@ -159,7 +168,7 @@ def create_superuser(username=None, email=None):
     )
 
 
-def fetch_render_copy(ref=None, dirty=False):
+def fetch_render_copy(ref=None, debug=False, dirty=False):
     """
     Fetch source code, render settings file, push remotely and delete checkout.
     """
@@ -167,18 +176,18 @@ def fetch_render_copy(ref=None, dirty=False):
     require("scm_type", "scm_url")
 
     env.tempdir = utils.fetch_source(env.scm_type, env.scm_url, ref, dirty)
-    render_settings_template()
+    render_settings_template(debug)
     operations.rsync_from_local()
     utils.delete_source(env.tempdir)
 
 
-def deploy_django(ref=None, dirty=False):
+def deploy_django(ref=None, debug=False, dirty=False):
     """
     Standard Django deployment actions.
     """
 
     create_virtualenv()
-    fetch_render_copy(ref, dirty)
+    fetch_render_copy(ref, debug, dirty)
     pip_requirements()
     migratedb()
     refresh_wsgi()
