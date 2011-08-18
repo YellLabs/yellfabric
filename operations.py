@@ -1,5 +1,8 @@
 import java
 import python
+import utils
+
+import pprint
 
 from fabric.api import env, require, runs_once
 from fabric.utils import abort
@@ -20,6 +23,13 @@ def fab_setup_paths():
         java.setup_paths()
     else:
         abort("Project language of %r unknown" % env.lang)
+
+
+def scm_echo_info():
+
+    require("scm_type")
+
+    pprint.pprint(utils.scm_get_info(env.scm_type))
 
 
 def rsync_from_local():
