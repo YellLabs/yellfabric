@@ -102,3 +102,17 @@ def deploy_java():
         "/usr/local/sbin/deploy_tomcat_webapp.py %s" % env.project_name,
         shell=False,
     )
+
+def deploy_jar():
+    render_settings_template()
+
+    require("sudo_user")
+    require("app_config_dir", "deploy_config_dir")
+    require("jar_file", "jar_path")
+    require("project_name")
+    
+    rsync_as_user("%s/" % env.app_config_dir, "%s/" % env.deploy_config_dir, env.sudo_user, delete=True,)
+    rsync_as_user(env.jar_path, env.jar_file, env.sudo_user)
+
+    
+    
