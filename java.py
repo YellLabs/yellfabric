@@ -35,9 +35,10 @@ def fetch_from_repo():
     fetch[env.app_config_archive] = \
         "%(repo_base)s/%(project_name)s/%(proj_version)s/" \
         "%(project_name)s-%(proj_version)s-config.tar.gz" % env
-    fetch[env.sql_archive] = \
-        "%(repo_base)s/%(project_name)s/%(proj_version)s/" \
-        "%(project_name)s-%(proj_version)s-sql.tar.gz" % env
+    if env.get('has_sql_archive'):
+        fetch[env.sql_archive] = \
+            "%(repo_base)s/%(project_name)s/%(proj_version)s/" \
+            "%(project_name)s-%(proj_version)s-sql.tar.gz" % env
     for name, url in fetch.iteritems():
         local("wget -O%s '%s'" % (name, url))
 
