@@ -136,14 +136,7 @@ def deploy_java():
 
     undeploy(env.project_name)
 
-    try:
-       env.jdbc_cp_jndi_name
-    except NameError:
-       env.jdbc_cp_jndi_name = None
-    except AttributeError:
-       env.jdbc_cp_jndi_name = None
-
-    if env.mail_resource_jndi_name:
+    if env.jdbc_cp_jndi_name:
         undeploy_jdbc_connection_pool_resource(env.jdbc_cp_jndi_name)
 
     if env.mail_resource_jndi_name:
