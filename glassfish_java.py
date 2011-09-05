@@ -143,33 +143,13 @@ def deploy_java():
     except AttributeError:
        env.jdbc_cp_jndi_name = None
 
-    if env.mail_resource_jndi_name is None:
-        print "No JDBC resource to undeploy"
-    else:
+    if env.mail_resource_jndi_name:
         undeploy_jdbc_connection_pool_resource(env.jdbc_cp_jndi_name)
 
-    try:
-       env.mail_resource_jndi_name
-    except NameError:
-       env.mail_resource_jndi_name = None
-    except AttributeError:
-       env.mail_resource_jndi_name = None
-
-    if env.mail_resource_jndi_name is None:
-        print "No mail resource to undeploy"
-    else:
+    if env.mail_resource_jndi_name:
         undeploy_mail_resource(env.mail_resource_jndi_name)
 
-    try:
-       env.resources_to_deploy
-    except NameError:
-       env.resource_to_deploy = None
-    except AttributeError:
-       env.resources_to_deploy = None
-
-    if env.resources_to_deploy is None:
-        print "No resources to deploy"
-    else:
+    if env.resources_to_deploy:
         resource_file=os.path.join(PATH_YELL_CONF, env.config_dir_name, "glassfish-resources.xml")
         deploy_resources(resource_file)
 
