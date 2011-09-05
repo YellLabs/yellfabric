@@ -4,7 +4,7 @@ import shutil
 import sys
 import tempfile
 
-from fabric.api import local, env, sudo, lcd, run, runs_once, require
+from fabric.api import local, env, sudo, lcd, run, runs_once, require, hide
 from fabric.contrib.project import rsync_project
 
 from utils import template_context, template_to_file
@@ -85,8 +85,9 @@ def undeploy(application):
     """
     
     require("asadmin")
-    applications = run("%s list-applications" % env.asadmin).split("\n")
-    applications = [x.split()[0] for x in applications]
+    with hide("stdout"):
+        applications = run("%s list-applications" % env.asadmin).split("\n")
+        applications = [x.split()[0] for x in applications]
 
     if application in applications:
         run("%s undeploy %s" % (env.asadmin, application))
@@ -113,7 +114,8 @@ def undeploy_jdbc_connection_pool_resource(jndi_name):
     """
 
     require("asadmin")
-    connection_pools = run("%s list-jdbc-connection-pools" % env.asadmin).split("\n")
+    with hide("stdout"):
+        connection_pools = run("%s list-jdbc-connection-pools" % env.asadmin).split("\n")
 
     if jndi_name in connection_pools:
         run("%s delete-jdbc-connection-pool --cascade true %s" % (env.asadmin, jndi_name))
@@ -124,7 +126,8 @@ def undeploy_mail_resource(jndi_name):
     """
 
     require("asadmin")
-    mail_resources = run("%s list-javamail-resources" % env.asadmin).split("\n")
+    with hide("stdout"):
+        mail_resources = run("%s list-javamail-resources" % env.asadmin).split("\n")
 
     if jndi_name in mail_resources:
         run("%s delete-javamail-resource %s" % (env.asadmin, jndi_name))
