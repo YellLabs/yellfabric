@@ -85,9 +85,10 @@ def undeploy(application):
     """
     
     require("asadmin")
-    applications = run("%s list-applications" % env.asadmin)
+    applications = run("%s list-applications" % env.asadmin).split("\n")
+    applications = [x.split()[0] for x in applications]
 
-    if applications.__contains__(application):
+    if application in applications:
         run("%s undeploy %s" % (env.asadmin, application))
 
 def deploy(context, war):
@@ -112,9 +113,9 @@ def undeploy_jdbc_connection_pool_resource(jndi_name):
     """
 
     require("asadmin")
-    connection_pools = run("/opt/glassfish/bin/asadmin list-jdbc-connection-pools")
+    connection_pools = run("%s list-jdbc-connection-pools" % env.asadmin).split("\n")
 
-    if connection_pools.__contains__(jndi_name):
+    if jndi_name in connection_pools:
         run("%s delete-jdbc-connection-pool --cascade true %s" % (env.asadmin, jndi_name))
 
 def undeploy_mail_resource(jndi_name):
@@ -123,9 +124,9 @@ def undeploy_mail_resource(jndi_name):
     """
 
     require("asadmin")
-    mail_resources = run("%s list-javamail-resources" % env.asadmin)
+    mail_resources = run("%s list-javamail-resources" % env.asadmin).split("\n")
 
-    if mail_resources.__contains__(jndi_name):
+    if jndi_name in mail_resources:
         run("%s delete-javamail-resource %s" % (env.asadmin, jndi_name))
 
 def deploy_java():
