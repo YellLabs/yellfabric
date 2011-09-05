@@ -15,7 +15,6 @@ PATH_YELL_CONF=os.path.join("/", "etc", "yell")
 
 @runs_once
 def setup_paths():
-    print "setup_paths called"
     require("java_root", "java_conf", "java_log", "project_name", "config_dir_name")
 
     env.war_file = "%s.war" % env.project_name
@@ -26,7 +25,6 @@ def setup_paths():
 
 @runs_once
 def use_maven_build():
-    print "use_maven_build called"
     require("war_path", provided_by="setup_paths")
 
     try:
@@ -37,7 +35,6 @@ def use_maven_build():
 
 @runs_once
 def render_settings_template():
-    print "render_settings_template called"
     tempdir = tempfile.mkdtemp()
     local("tar -C'%s' -xzf '%s'" % (tempdir, env.app_config_archive))
 
@@ -59,7 +56,6 @@ def render_settings_template():
     env.deploy_config_dir = target_dir
 
 def rsync_as_user(remote_dir, local_dir, user, delete = False, exclude = ()):
-    print "rsync_as_user called"
     extra_opts = '--rsync-path="sudo -u %s rsync"' % user
     rsync_project(remote_dir, local_dir, exclude = exclude, delete = delete, extra_opts = extra_opts)
 
@@ -90,7 +86,6 @@ def undeploy(application):
     """
     
     applications = run("/opt/glassfish/bin/asadmin list-applications")
-    print "deployed applications = %s" % applications
 
     if applications.__contains__(application):
         run("/opt/glassfish/bin/asadmin undeploy %s" % application)
@@ -114,7 +109,6 @@ def undeploy_jdbc_connection_pool_resource(jndi_name):
     undeploy the jdbc connection pool
     """
     connection_pools = run("/opt/glassfish/bin/asadmin list-jdbc-connection-pools")
-    print "deployed connection pools = %s" % connection_pools
 
     if connection_pools.__contains__(jndi_name):
         run("/opt/glassfish/bin/asadmin delete-jdbc-connection-pool --cascade true %s" % jndi_name)
@@ -124,13 +118,11 @@ def undeploy_mail_resource(jndi_name):
     undeploy the mail resource
     """
     mail_resources = run("/opt/glassfish/bin/asadmin list-javamail-resources")
-    print "deployed mail resources = %s" % mail_resources
 
     if mail_resources.__contains__(jndi_name):
         run("/opt/glassfish/bin/asadmin delete-javamail-resource %s" % jndi_name)
 
 def deploy_java():
-    print "deploy_java called"
     render_settings_template()
     
     require("sudo_user")
