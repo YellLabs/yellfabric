@@ -132,7 +132,6 @@ def deploy_java():
     rsync_as_user(env.war_path, env.war_file, env.sudo_user)
     
     require("project_name")
-#    sudo("/usr/local/sbin/deploy_glassfish_webapp.py %s %s" % (env.project_name, env.jdbc_cp_jndi_name), shell = False)
     remote_war_file=os.path.join(PATH_YELL_WEBAPPS, "%s.war" % env.project_name)
 
     undeploy(env.project_name)
@@ -175,5 +174,3 @@ def deploy_java():
         deploy_resources(resource_file)
 
     deploy(env.project_name, remote_war_file)
-#    glassfish_service("stop-domain")
-#    glassfish_service("start-domain")
