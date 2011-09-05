@@ -10,9 +10,6 @@ from fabric.contrib.project import rsync_project
 from utils import template_context, template_to_file
 from fabric.operations import prompt
 
-PATH_YELL_WEBAPPS=os.path.join("/", "usr", "share", "java", "wars")
-PATH_YELL_CONF=os.path.join("/", "etc", "yell")
-
 @runs_once
 def setup_paths():
     require("java_root", "java_conf", "java_log", "project_name", "config_dir_name")
@@ -128,11 +125,12 @@ def deploy_java():
     require("sudo_user")
     require("app_config_dir", "deploy_config_dir")
     rsync_as_user("%s/" % env.app_config_dir, "%s/" % env.deploy_config_dir, env.sudo_user, delete = True)
+
     require("war_file", "war_path")
     rsync_as_user(env.war_path, env.war_file, env.sudo_user)
     
-    require("project_name")
-    remote_war_file=os.path.join(PATH_YELL_WEBAPPS, "%s.war" % env.project_name)
+    require("java_root", "project_name")
+    remote_war_file=os.path.join(env.java_root, "%s.war" % env.project_name)
 
     undeploy(env.project_name)
 
@@ -142,8 +140,9 @@ def deploy_java():
     if env.mail_resource_jndi_name:
         undeploy_mail_resource(env.mail_resource_jndi_name)
 
+    require("java_conf")
     if env.resources_to_deploy:
-        resource_file=os.path.join(PATH_YELL_CONF, env.config_dir_name, "glassfish-resources.xml")
+        resource_file=os.path.join(env.java_conf, env.config_dir_name, "glassfish-resources.xml")
         deploy_resources(resource_file)
 
     deploy(env.project_name, remote_war_file)
