@@ -19,6 +19,7 @@ def setup_paths():
     env.app_config_archive = "%s-config.tar.gz" % env.project_name
     env.app_config_dir = os.path.join(env.java_conf, env.config_dir_name)
     env.log_dir = os.path.join(env.java_log, env.project_name)
+    env.asadmin = "/opt/glassfish/bin/asadmin --terse"
 
 @runs_once
 def use_maven_build():
@@ -75,49 +76,57 @@ def glassfish_service(action):
     Stop or restart Glassfish
     """
 
-    run("/opt/glassfish/bin/asadmin %s domain1" % action)
+    require("asadmin")
+    run("%s domain1" % (env.asadmin, action))
 
 def undeploy(application):
     """
     Undeploy the application
     """
     
-    applications = run("/opt/glassfish/bin/asadmin list-applications")
+    require("asadmin")
+    applications = run("%s list-applications" % env.asadmin)
 
     if applications.__contains__(application):
-        run("/opt/glassfish/bin/asadmin undeploy %s" % application)
+        run("%s undeploy %s" % (env.asadmin, application))
 
 def deploy(context, war):
     """
     deploy the application
     """
 
-    run("/opt/glassfish/bin/asadmin deploy %s" % war)
+    require("asadmin")
+    run("%s deploy %s" % (env.asadmin, war))
 
 def deploy_resources(resource_file):
     """
     deploy the resources
     """
 
-    run("/opt/glassfish/bin/asadmin add-resources %s" % resource_file)
+    require("asadmin")
+    run("%s add-resources %s" % (env.asadmin, resource_file))
 
 def undeploy_jdbc_connection_pool_resource(jndi_name):
     """
     undeploy the jdbc connection pool
     """
+
+    require("asadmin")
     connection_pools = run("/opt/glassfish/bin/asadmin list-jdbc-connection-pools")
 
     if connection_pools.__contains__(jndi_name):
-        run("/opt/glassfish/bin/asadmin delete-jdbc-connection-pool --cascade true %s" % jndi_name)
+        run("%s delete-jdbc-connection-pool --cascade true %s" % (env.asadmin, jndi_name))
 
 def undeploy_mail_resource(jndi_name):
     """
     undeploy the mail resource
     """
-    mail_resources = run("/opt/glassfish/bin/asadmin list-javamail-resources")
+
+    require("asadmin")
+    mail_resources = run("%s list-javamail-resources" % env.asadmin)
 
     if mail_resources.__contains__(jndi_name):
-        run("/opt/glassfish/bin/asadmin delete-javamail-resource %s" % jndi_name)
+        run("%s delete-javamail-resource %s" % (env.asadmin, jndi_name))
 
 def deploy_java():
     render_settings_template()
