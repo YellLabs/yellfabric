@@ -87,7 +87,7 @@ def undeploy(application):
     require("asadmin")
     with hide("stdout"):
         applications = run("%s list-applications" % env.asadmin).split("\n")
-        applications = [x.split()[0] for x in applications]
+        applications = [x.split()[0] for x in applications if len(x) > 0]
 
     if application in applications:
         run("%s undeploy %s" % (env.asadmin, application))
