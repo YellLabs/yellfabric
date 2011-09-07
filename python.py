@@ -136,9 +136,12 @@ def migratedb(rollback=False):
     # Do the rest afterwards
     #
     if has_version_info():
+
         apps = env.south_migrations.keys()
 
         for app in apps:
+
+            print app
 
             version = get_south_migrate_version(app, rollback)
 
@@ -151,7 +154,6 @@ def migratedb(rollback=False):
         migrate_app_db()
 
 
-@runs_once
 def migrate_app_db(app=None, version=None, args=None):
 
     require("virtualenv_path", "project_path", "sudo_user")
@@ -163,6 +165,8 @@ def migrate_app_db(app=None, version=None, args=None):
             command = ' '.join(['migrate', app, version])
     else:
         command = "migrate"
+
+    print command
 
     utils.django_manage_run(
         env.virtualenv_path,
@@ -266,11 +270,11 @@ def rollback_django(ref=None, debug=False, dirty=False):
         migratedb(True)
 
         # Get the old code
-        env.tempdir = None
-        fetch_render_copy(env.scm_tag, debug, dirty)
+        del env['tempdir']
+        fetch_render_copy(env.scm_tag["rollback"], debug, dirty)
 
         pip_requirements()
         refresh_wsgi()
 
     else:
-        print "No version info present to allow rollback"
+        "No version info present to allow rollback"
