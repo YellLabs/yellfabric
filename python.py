@@ -280,4 +280,4 @@ def rollback_django(ref=None, debug=False, dirty=False):
         refresh_wsgi()
 
     else:
-        "No version info present to allow rollback"
+        abort("No version info present to allow rollback")
