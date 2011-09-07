@@ -25,3 +25,4 @@ I was originally hoping to avoid global `env` variables and have each method acc
 1. Argument for turning on DEBUG mode in Django deployments.
 1. Possibly the same for increasing log verbosity in Java deployments.
 1. Check presence of WSGI file before touching. Will catch naming issues.
+1. Change pip(1) log location.
