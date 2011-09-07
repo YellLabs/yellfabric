@@ -14,14 +14,14 @@ def fab_setup_paths():
 
     require("lang")
 
-    if env.lang == "python":
+    if env.lang in ["django", "python"]:
         python.setup_paths()
-    elif env.lang == "java":
+    elif env.lang in ["tomcat", "java"]:
         java.setup_paths()
-    elif env.lang == "glassfish-java":
+    elif env.lang == "glassfish":
         glassfish_java.setup_paths()
     else:
-        abort("Project language of %r unknown" % env.lang)
+        abort("Project language %r unknown" % env.lang)
 
 def rsync_from_local():
     """
