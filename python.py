@@ -136,7 +136,7 @@ def migratedb(rollback=False):
     # Do the rest afterwards
     #
     if has_version_info():
-        apps = env.south_migrations.viewkeys()
+        apps = env.south_migrations.keys()
 
         for app in apps:
 
