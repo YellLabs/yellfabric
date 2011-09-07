@@ -113,28 +113,89 @@ def syncdb():
 
 
 @runs_once
-def migratedb():
+def migratedb(rollback=False):
     """
     Perform 'migrate' action for a Django project.
     """
 
     require("virtualenv_path", "project_path", "sudo_user")
 
+    #
+    # Some things need to be done first (i.e. if they need a different
+    # database connection or some custom args)
+    #
     if "migratedb_first" in env:
+
         for app, args in env.migratedb_first.iteritems():
-            utils.django_manage_run(
-                env.virtualenv_path,
-                env.project_path,
-                ' '.join(['migrate', app, args]),
-                env.sudo_user,
-            )
+
+            version = get_south_migrate_version(app, rollback)
+
+            migrate_app_db(app, version, args)
+
+    #
+    # Do the rest afterwards
+    #
+    if has_version_info():
+        apps = env.south_migrations.viewkeys()
+
+        for app in apps:
+
+            version = get_south_migrate_version(app, rollback)
+
+            migrate_app_db(app, version)
+
+    #
+    # If we know nothing, just migrate everything
+    #
+    else:
+        migrate_app_db()
+
+
+@runs_once
+def migrate_app_db(app=None, version=None, args=None):
+
+    require("virtualenv_path", "project_path", "sudo_user")
+
+    if app:
+        if args:
+            command = ' '.join(['migrate', app, version, args])
+        else:
+            command = ' '.join(['migrate', app, version])
+    else:
+        command = "migrate"
 
     utils.django_manage_run(
         env.virtualenv_path,
         env.project_path,
-        "migrate",
+        command,
         env.sudo_user,
     )
+
+
+def get_south_migrate_version(app, rollback=False):
+
+    version = None if rollback else "auto"
+
+    if has_version_info():
+
+        if app in env.south_migrations:
+
+            if rollback:
+                version = env.south_migrations[app]["rollback"]
+
+            else:
+                version = env.south_migrations[app]["deploy"]
+
+    return version
+
+
+def has_version_info():
+
+    if "south_migrations" in env:
+        if "scm_tag" in env:
+            return True
+
+    return False
 
 
 @runs_once
@@ -184,3 +245,31 @@ def deploy_django(ref=None, debug=False, dirty=False):
     pip_requirements()
     migratedb()
     refresh_wsgi()
+
+
+def rollback_django(ref=None, debug=False, dirty=False):
+    """
+    There is nothing standard about rolling back.
+    """
+    if has_version_info():
+        #
+        # To roll back we need to fetch the existing version, execute the
+        # database rollback, and then do a deploy of a specific version
+        #
+        create_virtualenv()
+
+        # Copy the new code... the one we want to back out, as we need the
+        # migrations from this
+        fetch_render_copy(ref, debug, dirty)
+
+        # Rollback the database
+        migratedb(True)
+
+        # Get the old code
+        fetch_render_copy(env.scm_tag, debug, dirty)
+
+        pip_requirements()
+        refresh_wsgi()
+
+    else:
+        print "No version info present to allow rollback"
