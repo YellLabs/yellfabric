@@ -226,7 +226,7 @@ def create_superuser(username=None, email=None):
     )
 
 
-def fetch_render_copy(ref=None, debug=False, dirty=False):
+def fetch_render_copy(ref=None, debug=False, dirty=False, copy_remote=False):
     """
     Fetch source code, render settings file, push remotely and delete checkout.
     """
@@ -235,7 +235,10 @@ def fetch_render_copy(ref=None, debug=False, dirty=False):
 
     env.tempdir = utils.fetch_source(env.scm_type, env.scm_url, ref, dirty)
     render_settings_template(debug)
-    operations.rsync_from_local()
+
+    if copy_remote:
+        operations.rsync_from_local()
+
     utils.delete_source(env.tempdir)
 
 
@@ -245,7 +248,7 @@ def deploy_django(ref=None, debug=False, dirty=False):
     """
 
     create_virtualenv()
-    fetch_render_copy(ref, debug, dirty)
+    fetch_render_copy(ref, debug, dirty, True)
     pip_requirements()
     migratedb()
     refresh_wsgi()
@@ -271,7 +274,7 @@ def rollback_django(ref=None, debug=False, dirty=False):
 
         # Get the old code
         del env['tempdir']
-        fetch_render_copy(env.scm_tag["rollback"], debug, dirty)
+        fetch_render_copy(env.scm_tag["rollback"], debug, dirty, True)
 
         pip_requirements()
         refresh_wsgi()
