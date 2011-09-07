@@ -266,6 +266,7 @@ def rollback_django(ref=None, debug=False, dirty=False):
         migratedb(True)
 
         # Get the old code
+        env.tempdir = None
         fetch_render_copy(env.scm_tag, debug, dirty)
 
         pip_requirements()
