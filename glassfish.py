@@ -57,20 +57,6 @@ def rsync_as_user(remote_dir, local_dir, user, delete = False, exclude = ()):
     extra_opts = '--rsync-path="sudo -u %s rsync"' % user
     rsync_project(remote_dir, local_dir, exclude = exclude, delete = delete, extra_opts = extra_opts)
 
-def _check_call(*popenargs, **kwargs):
-    """
-    EL5 ships with Python 2.4 which doesn't have subprocess.check_call()
-    Back ported from Python 2.6.6
-    """
-
-    retcode = subprocess.call(*popenargs, **kwargs)
-    cmd = kwargs.get("args")
-    if cmd is None:
-        cmd = popenargs[0]
-    if retcode:
-        raise CalledProcessError(retcode, cmd)
-    return retcode
-
 def glassfish_service(action):
     """
     Stop or restart Glassfish
