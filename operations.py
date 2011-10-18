@@ -1,6 +1,6 @@
 import os
 
-import java, python, glassfish_java
+import java, python, glassfish
 
 from fabric.api import local, env, require, cd, runs_once
 from fabric.utils import abort
@@ -19,7 +19,7 @@ def fab_setup_paths():
     elif env.lang in ["tomcat", "java"]:
         java.setup_paths()
     elif env.lang == "glassfish":
-        glassfish_java.setup_paths()
+        glassfish.setup_paths()
     else:
         abort("Project language %r unknown" % env.lang)
 
