@@ -69,7 +69,7 @@ def undeploy(application):
     """
     Undeploy the application
     """
-    
+
     require("asadmin")
     with hide("stdout"):
         applications = run("%s list-applications" % env.asadmin).split("\n")
@@ -120,14 +120,14 @@ def undeploy_mail_resource(jndi_name):
 
 def deploy_java():
     render_settings_template()
-    
+
     require("sudo_user")
     require("app_config_dir", "deploy_config_dir")
     rsync_as_user("%s/" % env.app_config_dir, "%s/" % env.deploy_config_dir, env.sudo_user, delete = True)
 
     require("war_file", "war_path")
     rsync_as_user(env.war_path, env.war_file, env.sudo_user)
-    
+
     require("java_root", "project_name")
     remote_war_file=os.path.join(env.java_root, "%s.war" % env.project_name)
 
