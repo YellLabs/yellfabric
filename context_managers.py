@@ -2,6 +2,7 @@ import os
 from fabric.api import prefix
 from contextlib import contextmanager
 
+
 @contextmanager
 def _DummyContext():
     """
@@ -10,6 +11,7 @@ def _DummyContext():
     """
 
     yield
+
 
 def proxy(http_proxy=None, https_proxy=None):
     """
@@ -30,6 +32,7 @@ def proxy(http_proxy=None, https_proxy=None):
         return prefix(cmd)
 
     return _DummyContext()
+
 
 def virtualenv(virtualenv=None):
     """
