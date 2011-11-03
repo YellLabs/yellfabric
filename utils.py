@@ -108,7 +108,6 @@ def scm_get_info(scm_type, scm_ref=None, directory=False):
     return scm_info
 
 
-@runs_once
 def fetch_source(scm_type, scm_url, scm_ref=None, dirty=False):
     if dirty:
         tempdir = os.path.abspath(os.getcwd())

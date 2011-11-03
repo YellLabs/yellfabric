@@ -46,9 +46,10 @@ def fetch_from_repo():
     fetch[env.app_config_archive] = \
         "%(repo_base)s/%(project_name)s/%(proj_version)s/" \
         "%(project_name)s-%(proj_version)s-config.tar.gz" % env
-    fetch[env.sql_archive] = \
-        "%(repo_base)s/%(project_name)s/%(proj_version)s/" \
-        "%(project_name)s-%(proj_version)s-sql.tar.gz" % env
+    if env.get('has_sql_archive'):
+        fetch[env.sql_archive] = \
+            "%(repo_base)s/%(project_name)s/%(proj_version)s/" \
+            "%(project_name)s-%(proj_version)s-sql.tar.gz" % env
     for name, url in fetch.iteritems():
         local("wget -O%s '%s'" % (name, url))
 
@@ -56,12 +57,12 @@ def fetch_from_repo():
 @runs_once
 def use_maven_build():
     require("war_path", provided_by="setup_paths")
-
-    try:
-        env.war_file = glob.glob("target/*.war")[0]
-        env.app_config_archive = glob.glob("target/*-config.tar.gz")[0]
-    except IndexError:
-        sys.exit("Failed to find maven build products in target directory")
+    local("mvn clean package")
+    war_files = glob.glob("target/" + env.project_name + "*.war")
+    if len(war_files) != 1:
+        raise ValueError("No valid war files in target directory")
+    env.war_file = war_files[0]
+    env.app_config_archive = glob.glob("target/*-config.tar.gz")[0]
 
 
 @runs_once
