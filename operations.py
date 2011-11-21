@@ -5,9 +5,10 @@ import utils
 
 import pprint
 
-from fabric.api import env, require, runs_once
+from fabric.api import env, require, runs_once, local
 from fabric.utils import abort
 from fabric.contrib.project import rsync_project
+from fabric.operations import prompt
 
 
 @runs_once
@@ -68,3 +69,25 @@ def use_maven_build():
         env.app_config_archive = glob.glob("target/*-config.tar.gz")[0]
     except IndexError:
          sys.exit("Failed to find maven build products in target directory")
+
+
+@runs_once
+def fetch_from_repo():
+    # repo_base should be something like
+    # http://cis-dev.local:8080/artifactory/libs-release-local/com/yelllabs
+    require("project_name")
+    prompt("Base URL for this project:", "repo_base")
+    prompt("Version:", "proj_version")
+    fetch = {}
+    fetch[env.war_file] = \
+        "%(repo_base)s/%(project_name)s/%(proj_version)s/" \
+        "%(project_name)s-%(proj_version)s.war" % env
+    fetch[env.app_config_archive] = \
+        "%(repo_base)s/%(project_name)s/%(proj_version)s/" \
+        "%(project_name)s-%(proj_version)s-config.tar.gz" % env
+    if env.get('has_sql_archive'):
+        fetch[env.sql_archive] = \
+            "%(repo_base)s/%(project_name)s/%(proj_version)s/" \
+            "%(project_name)s-%(proj_version)s-sql.tar.gz" % env
+    for name, url in fetch.iteritems():
+        local("wget -O%s '%s'" % (name, url))

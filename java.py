@@ -7,7 +7,6 @@ from fabric.api import local, env, sudo, runs_once, require
 from fabric.contrib.project import rsync_project
 
 from utils import template_context, template_to_file
-from fabric.operations import prompt
 
 
 @runs_once
@@ -20,27 +19,6 @@ def setup_paths():
     env.sql_archive = "%s-sql.tar.gz" % env.project_name
     env.app_config_dir = os.path.join(env.java_conf, env.project_name)
     env.log_dir = os.path.join(env.java_log, env.project_name)
-
-
-@runs_once
-def fetch_from_repo():
-    # repo_base should be something like
-    # http://cis-dev.local:8080/artifactory/libs-release-local/com/yelllabs
-    prompt("Base URL for this project:", "repo_base")
-    prompt("Version:", "proj_version")
-    fetch = {}
-    fetch[env.war_file] = \
-        "%(repo_base)s/%(project_name)s/%(proj_version)s/" \
-        "%(project_name)s-%(proj_version)s.war" % env
-    fetch[env.app_config_archive] = \
-        "%(repo_base)s/%(project_name)s/%(proj_version)s/" \
-        "%(project_name)s-%(proj_version)s-config.tar.gz" % env
-    if env.get('has_sql_archive'):
-        fetch[env.sql_archive] = \
-            "%(repo_base)s/%(project_name)s/%(proj_version)s/" \
-            "%(project_name)s-%(proj_version)s-sql.tar.gz" % env
-    for name, url in fetch.iteritems():
-        local("wget -O%s '%s'" % (name, url))
 
 
 @runs_once
