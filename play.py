@@ -9,7 +9,6 @@ from fabric.api import env, require, cd, runs_once, sudo, abort
 def setup_paths():
     require("play_root", "project_name")
 
-    env.play_bin = os.path.join("/opt", "play", "play")
     env.project_path = os.path.join(env.play_root, env.project_name)
 
 
