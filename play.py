@@ -16,6 +16,7 @@ def setup_paths():
 
 def sync_deps():
     """
+    Download project dependencies and sync modules/lib dirs.
     """
 
     require(
@@ -30,6 +31,7 @@ def sync_deps():
 
 def restart():
     """
+    Restart the application using supervisord.
     """
 
     require("project_name")
@@ -41,6 +43,7 @@ def restart():
 @runs_once
 def migratedb():
     """
+    Perform database migrations using Evolutions.
     """
 
     require("project_path", "sudo_user")
