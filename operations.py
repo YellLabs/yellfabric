@@ -1,6 +1,7 @@
 import java
 import python
 import glassfish
+import play
 import utils
 
 import pprint
@@ -25,6 +26,8 @@ def fab_setup_paths():
         java.setup_paths()
     elif env.lang == "glassfish":
         glassfish.setup_paths()
+    elif env.lang == "play":
+        play.setup_paths()
     else:
         abort("Project language %r unknown" % env.lang)
 
