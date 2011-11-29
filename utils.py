@@ -175,6 +175,15 @@ def delete_source(tempdir, dirty=False):
     shutil.rmtree(tempdir)
 
 
+def render_settings_template(source, target, settings):
+    """
+    Render a settings file from a template in a local checkout.
+    """
+
+    context = template_context(settings)
+    template_to_file(source, target, context)
+
+
 @runs_once
 def template_context(vars):
     """

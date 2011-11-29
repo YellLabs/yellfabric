@@ -28,15 +28,6 @@ def sync_deps():
         utils.play_run(env.project_path, "dependencies --sync", user=env.sudo_user)
 
 
-def render_settings_template(settings, source, target):
-    """
-    Render a settings file from a template in a local checkout.
-    """
-
-    context = utils.template_context(settings)
-    utils.template_to_file(source, target, context)
-
-
 def restart():
     """
     """
@@ -66,7 +57,7 @@ def fetch_render_copy(ref=None, debug=False, dirty=False, copy_remote=False):
     env.tempdir = utils.fetch_source(env.scm_type, env.scm_url, ref, dirty)
     config_source = os.path.join(env.tempdir, env.config_source)
     config_target = os.path.join(env.tempdir, env.config_target)
-    render_settings_template(env.settings_vars, config_source, config_target)
+    utils.render_settings_template(config_source, config_target, env.settings_vars)
 
     if copy_remote:
         operations.rsync_from_local()
