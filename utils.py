@@ -15,7 +15,7 @@ from string import replace
 from xml.dom import minidom
 
 from fabric.api import env, prompt, runs_once, sudo, local, puts, lcd
-from fabric.context_managers import hide
+from fabric.context_managers import hide, cd
 #from fabric.contrib.files import append
 
 
@@ -37,6 +37,15 @@ def django_manage_run(virtualenv, path, command, user, interactive=False):
         cmd = "%s --noinput" % cmd
 
     with context_managers.virtualenv(virtualenv):
+        sudo(cmd, user=user)
+
+
+def play_run(path, command, user):
+    """
+    """
+
+    cmd = "%s %s %s" % (env.python_bin, env.play_bin, command)
+    with cd(path):
         sudo(cmd, user=user)
 
 
@@ -167,6 +176,25 @@ def delete_source(tempdir, dirty=False):
 
 
 @runs_once
+def render_settings_template(source, target, settings, debug):
+    """
+    Render a settings file from a template in a local checkout.
+    """
+
+    context = template_context(settings)
+
+    # Treat as a string even though it's going to be rendered as unquoted.
+    # Clobbers anything from env in the project's own fabfile because the
+    # default should always be False.
+    if "%s" % debug in ["True", "False"]:
+        context["DEBUG"] = debug
+    else:
+        abort("local_settings.DEBUG may only be True or False")
+
+    template_to_file(source, target, context)
+
+
+@runs_once
 def template_context(vars):
     """
     Compiles a list of variables and their values from Fabric's env into a
@@ -182,6 +210,7 @@ def template_context(vars):
     return context
 
 
+@runs_once
 def template_to_file(source, target, context):
     """
     Populate templated local_settings and place it in the tempdir to be

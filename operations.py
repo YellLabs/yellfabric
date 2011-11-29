@@ -1,8 +1,10 @@
 import java
 import python
 import glassfish
+import play
 import utils
 
+import os.path
 import pprint
 
 from fabric.api import env, require, runs_once, local
@@ -25,6 +27,8 @@ def fab_setup_paths():
         java.setup_paths()
     elif env.lang == "glassfish":
         glassfish.setup_paths()
+    elif env.lang == "play":
+        play.setup_paths()
     else:
         abort("Project language %r unknown" % env.lang)
 
@@ -91,3 +95,21 @@ def fetch_from_repo():
             "%(project_name)s-%(proj_version)s-sql.tar.gz" % env
     for name, url in fetch.iteritems():
         local("wget -O%s '%s'" % (name, url))
+
+
+def fetch_render_copy(ref=None, debug=False, dirty=False, copy_remote=False):
+    """
+    Fetch source code, render settings file, push remotely and delete checkout.
+    """
+
+    require("scm_type", "scm_url", "config_source", "config_target", "settings_vars")
+
+    env.tempdir = utils.fetch_source(env.scm_type, env.scm_url, ref, dirty)
+    config_source = os.path.join(env.tempdir, env.config_source)
+    config_target = os.path.join(env.tempdir, env.config_target)
+    utils.render_settings_template(config_source, config_target, env.settings_vars, debug)
+
+    if copy_remote:
+        rsync_from_local()
+
+    utils.delete_source(env.tempdir, dirty)
