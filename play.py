@@ -10,6 +10,8 @@ def setup_paths():
     require("play_root", "project_name")
 
     env.project_path = os.path.join(env.play_root, env.project_name)
+    env.config_source = os.path.join("conf", "application.conf.template")
+    env.config_target = os.path.join("conf", "application.conf")
 
 
 def sync_deps():
@@ -26,17 +28,12 @@ def sync_deps():
         utils.play_run(env.project_path, "dependencies --sync", user=env.sudo_user)
 
 
-def render_settings_template():
+def render_settings_template(settings, source, target):
     """
     Render a settings file from a template in a local checkout.
     """
 
-    require("tempdir", "project_path", "settings_vars")
-
-    source = os.path.join(env.tempdir, "conf", "application.conf.template")
-    target = os.path.join(env.tempdir, "conf", "application.conf")
-    context = utils.template_context(env.settings_vars)
-
+    context = utils.template_context(settings)
     utils.template_to_file(source, target, context)
 
 
@@ -64,10 +61,12 @@ def fetch_render_copy(ref=None, debug=False, dirty=False, copy_remote=False):
     Fetch source code, render settings file, push remotely and delete checkout.
     """
 
-    require("scm_type", "scm_url")
+    require("scm_type", "scm_url", "config_source", "config_target", "settings_vars")
 
     env.tempdir = utils.fetch_source(env.scm_type, env.scm_url, ref, dirty)
-    render_settings_template()
+    config_source = os.path.join(env.tempdir, env.config_source)
+    config_target = os.path.join(env.tempdir, env.config_target)
+    render_settings_template(env.settings_vars, config_source, config_target)
 
     if copy_remote:
         operations.rsync_from_local()
