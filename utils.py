@@ -15,7 +15,7 @@ from string import replace
 from xml.dom import minidom
 
 from fabric.api import env, prompt, runs_once, sudo, local, puts, lcd
-from fabric.context_managers import hide
+from fabric.context_managers import hide, cd
 #from fabric.contrib.files import append
 
 
@@ -37,6 +37,15 @@ def django_manage_run(virtualenv, path, command, user, interactive=False):
         cmd = "%s --noinput" % cmd
 
     with context_managers.virtualenv(virtualenv):
+        sudo(cmd, user=user)
+
+
+def play_run(path, command, user):
+    """
+    """
+
+    cmd = "%s %s %s" % (env.python_bin, env.play_bin, command)
+    with cd(path):
         sudo(cmd, user=user)
 
 
