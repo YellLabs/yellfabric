@@ -18,6 +18,8 @@ def setup_paths():
         os.path.join(env.project_path, "requirements", "project.txt")
     env.wsgi_path = \
         os.path.join(env.project_path, "deploy", "%s.wsgi" % env.project_name)
+    env.config_source = "local_settings.py.template"
+    env.config_target = "local_settings.py"
 
 
 def create_virtualenv():
@@ -226,29 +228,13 @@ def create_superuser(username=None, email=None):
     )
 
 
-def fetch_render_copy(ref=None, debug=False, dirty=False, copy_remote=False):
-    """
-    Fetch source code, render settings file, push remotely and delete checkout.
-    """
-
-    require("scm_type", "scm_url")
-
-    env.tempdir = utils.fetch_source(env.scm_type, env.scm_url, ref, dirty)
-    render_settings_template(debug)
-
-    if copy_remote:
-        operations.rsync_from_local()
-
-    utils.delete_source(env.tempdir)
-
-
 def deploy_django(ref=None, debug=False, dirty=False):
     """
     Standard Django deployment actions.
     """
 
     create_virtualenv()
-    fetch_render_copy(ref, debug, dirty, True)
+    operations.fetch_render_copy(ref, debug, dirty, True)
     pip_requirements()
     migratedb()
     refresh_wsgi()
