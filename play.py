@@ -57,7 +57,7 @@ def fetch_render_copy(ref=None, debug=False, dirty=False, copy_remote=False):
     env.tempdir = utils.fetch_source(env.scm_type, env.scm_url, ref, dirty)
     config_source = os.path.join(env.tempdir, env.config_source)
     config_target = os.path.join(env.tempdir, env.config_target)
-    utils.render_settings_template(config_source, config_target, env.settings_vars)
+    utils.render_settings_template(config_source, config_target, env.settings_vars, debug)
 
     if copy_remote:
         operations.rsync_from_local()

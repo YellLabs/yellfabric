@@ -175,12 +175,22 @@ def delete_source(tempdir, dirty=False):
     shutil.rmtree(tempdir)
 
 
-def render_settings_template(source, target, settings):
+@runs_once
+def render_settings_template(source, target, settings, debug):
     """
     Render a settings file from a template in a local checkout.
     """
 
     context = template_context(settings)
+
+    # Treat as a string even though it's going to be rendered as unquoted.
+    # Clobbers anything from env in the project's own fabfile because the
+    # default should always be False.
+    if "%s" % debug in ["True", "False"]:
+        context["DEBUG"] = debug
+    else:
+        abort("local_settings.DEBUG may only be True or False")
+
     template_to_file(source, target, context)
 
 
@@ -200,6 +210,7 @@ def template_context(vars):
     return context
 
 
+@runs_once
 def template_to_file(source, target, context):
     """
     Populate templated local_settings and place it in the tempdir to be
