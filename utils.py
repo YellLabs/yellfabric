@@ -175,7 +175,6 @@ def delete_source(tempdir, dirty=False):
     shutil.rmtree(tempdir)
 
 
-@runs_once
 def render_settings_template(source, target, settings, debug):
     """
     Render a settings file from a template in a local checkout.
@@ -194,7 +193,6 @@ def render_settings_template(source, target, settings, debug):
     template_to_file(source, target, context)
 
 
-@runs_once
 def template_context(vars):
     """
     Compiles a list of variables and their values from Fabric's env into a
@@ -210,7 +208,6 @@ def template_context(vars):
     return context
 
 
-@runs_once
 def template_to_file(source, target, context):
     """
     Populate templated local_settings and place it in the tempdir to be
