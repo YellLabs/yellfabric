@@ -23,7 +23,7 @@ def setup_paths():
     except NameError:
        env.config_dir_name = None
     except AttributeError:
-       env.config_dir_name = None	
+       env.config_dir_name = None
 
     if env.config_dir_name is None:
        env.config_dir_name = env.project_name
@@ -98,9 +98,6 @@ def deploy_jar():
     require("app_config_dir", "deploy_config_dir")
     require("jar_file", "jar_path")
     require("project_name")
-    
+
     rsync_as_user("%s/" % env.app_config_dir, "%s/" % env.deploy_config_dir, env.sudo_user, delete=True,)
     rsync_as_user(env.jar_path, env.jar_file, env.sudo_user)
-
-    
-    
