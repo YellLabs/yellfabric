@@ -1,5 +1,6 @@
 import java
 import python
+import glassfish
 import utils
 
 import pprint
@@ -17,12 +18,14 @@ def fab_setup_paths():
 
     require("lang")
 
-    if env.lang == "python":
+    if env.lang in ["django", "python"]:
         python.setup_paths()
-    elif env.lang == "java":
+    elif env.lang in ["tomcat", "java"]:
         java.setup_paths()
+    elif env.lang == "glassfish":
+        glassfish.setup_paths()
     else:
-        abort("Project language of %r unknown" % env.lang)
+        abort("Project language %r unknown" % env.lang)
 
 
 def scm_echo_info():
