@@ -8,6 +8,8 @@ env.python_root = "/srv/www/httpd"
 env.java_root = "/usr/share/java/wars"
 env.java_conf = "/etc/yell"
 env.java_log = "/var/log/tomcat6"
+env.play_root = "/srv/play"
+env.play_bin = "/opt/play/play"
 
 # Disable bash login simulation. It generates errors when used with sudo
 # because the sudo'ed user doesn't have access to the original user's

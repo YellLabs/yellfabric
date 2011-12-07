@@ -22,16 +22,6 @@ def setup_paths():
     env.asadmin = "/opt/glassfish/bin/asadmin --terse"
 
 @runs_once
-def use_maven_build():
-    require("war_path", provided_by="setup_paths")
-
-    try:
-        env.war_file = glob.glob("target/*.war")[0]
-        env.app_config_archive = glob.glob("target/*-config.tar.gz")[0]
-    except IndexError:
-         sys.exit("Failed to find maven build products in target directory")
-
-@runs_once
 def render_settings_template():
     tempdir = tempfile.mkdtemp()
     local("tar -C'%s' -xzf '%s'" % (tempdir, env.app_config_archive))
