@@ -14,7 +14,7 @@ def setup_paths():
     require("java_root", "java_conf", "java_log", "project_name", "proj_version")
 
     env.jar_file = "%s-%s.jar" % (env.project_name, env.proj_version)
-    env.jar_path = os.path.join(env.java_root, env.jar_file)
+    env.jar_path = os.path.join(env.jar_root, env.jar_file)
     env.war_file = "%s-%s.war" % (env.project_name, env.proj_version)
     env.war_path = os.path.join(env.java_root, env.war_file)
     env.app_config_archive = "%s-%s-config.tar.gz" %(env.project_name, env.proj_version)
