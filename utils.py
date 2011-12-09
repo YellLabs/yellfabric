@@ -193,6 +193,7 @@ def render_settings_template(source, target, settings, debug):
     template_to_file(source, target, context)
 
 
+@runs_once
 def template_context(vars):
     """
     Compiles a list of variables and their values from Fabric's env into a
