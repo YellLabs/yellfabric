@@ -11,13 +11,24 @@ from utils import template_context, template_to_file
 
 @runs_once
 def setup_paths():
-    require("java_root", "java_conf", "java_log", "project_name")
+    require("java_root", "java_conf", "java_log", "project_name", "proj_version")
 
-    env.war_file = "%s.war" % env.project_name
+    env.war_file = "%s-%s.war" % (env.project_name, env.proj_version)
     env.war_path = os.path.join(env.java_root, env.war_file)
-    env.app_config_archive = "%s-config.tar.gz" % env.project_name
-    env.sql_archive = "%s-sql.tar.gz" % env.project_name
-    env.app_config_dir = os.path.join(env.java_conf, env.project_name)
+    env.app_config_archive = "%s-%s-config.tar.gz" %(env.project_name, env.proj_version)
+    env.sql_archive = "%s-%s-sql.tar.gz" % (env.project_name, env.proj_version)
+
+    try:
+       env.config_dir_name
+    except NameError:
+       env.config_dir_name = None
+    except AttributeError:
+       env.config_dir_name = None	
+
+    if env.config_dir_name is None:
+       env.config_dir_name = env.project_name
+    env.app_config_dir = os.path.join(env.java_conf, env.config_dir_name)
+    env.app_xml_config_dir = os.path.join(env.java_conf, env.project_name)
     env.log_dir = os.path.join(env.java_log, env.project_name)
 
 
@@ -62,6 +73,15 @@ def deploy_java():
         env.sudo_user,
         delete=True,
     )
+
+    require("app_xml_config_dir", "deploy_config_dir")
+    rsync_as_user(
+        "%s/" % env.app_xml_config_dir,
+        "%s/" % env.deploy_config_dir,
+        env.sudo_user,
+        delete=True
+    )
+
     require("war_file", "war_path")
     rsync_as_user(env.war_path, env.war_file, env.sudo_user)
 
@@ -70,3 +90,17 @@ def deploy_java():
         "/usr/local/sbin/deploy_tomcat_webapp.py %s" % env.project_name,
         shell=False,
     )
+
+def deploy_jar():
+    render_settings_template()
+
+    require("sudo_user")
+    require("app_config_dir", "deploy_config_dir")
+    require("jar_file", "jar_path")
+    require("project_name")
+    
+    rsync_as_user("%s/" % env.app_config_dir, "%s/" % env.deploy_config_dir, env.sudo_user, delete=True,)
+    rsync_as_user(env.jar_path, env.jar_file, env.sudo_user)
+
+    
+    
