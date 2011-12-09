@@ -41,13 +41,13 @@ def restart():
 
 
 @runs_once
-def migratedb():
+def migratedb(command="apply"):
     """
     Perform database migrations using Evolutions.
     """
 
     require("project_path", "sudo_user")
-    utils.play_run(env.project_path, "evolutions:apply", user=env.sudo_user)
+    utils.play_run(env.project_path, "evolutions:%s" % command, user=env.sudo_user)
 
 
 def deploy_play(ref=None, debug=False, dirty=False):
