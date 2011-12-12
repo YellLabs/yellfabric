@@ -6,6 +6,7 @@ env.python_bin = "python2.6"
 # Root directory for Python and Java deployments.
 env.python_root = "/srv/www/httpd"
 env.java_root = "/usr/share/java/wars"
+env.jar_root = "/usr/share/java/jars"
 env.java_conf = "/etc/yell"
 env.java_log = "/var/log/tomcat6"
 env.play_root = "/srv/play"
