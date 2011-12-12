@@ -13,17 +13,17 @@ from utils import template_context, template_to_file
 def setup_paths():
     require("java_root", "java_conf", "java_log", "project_name", "proj_version")
     
-    env.jar_file = "%s.jar" % (env.project_name)    
+    env.jar_file = "%s-%s.jar" % (env.project_name, env.proj_version)    
     env.jar_path = os.path.join(env.jar_root, env.jar_file)
     
-    env.jar_file_version = "%s-%s.jar" % (env.project_name, env.proj_version)
-    env.jar_path_version = os.path.join(env.jar_root, env.jar_file_version)
+    env.jar_file_noversion = "%s.jar" % (env.project_name)
+    env.jar_path_noversion = os.path.join(env.jar_root, env.jar_file_noversion)
     
-    env.war_file = "%s.war" % (env.project_name)
+    env.war_file = "%s-%s.war" % (env.project_name, env.proj_version)
     env.war_path = os.path.join(env.java_root, env.war_file)
 
-    env.war_file_version = "%s-%s.war" % (env.project_name, env.proj_version)
-    env.war_path_version = os.path.join(env.java_root, env.war_file_version)
+    env.war_file_noversion = "%s.war" % (env.project_name)
+    env.war_path_noversion = os.path.join(env.java_root, env.war_file_noversion)
     
     env.app_config_archive = "%s-%s-config.tar.gz" %(env.project_name, env.proj_version)
     env.sql_archive = "%s-%s-sql.tar.gz" % (env.project_name, env.proj_version)
@@ -93,7 +93,7 @@ def deploy_java():
     )
 
     require("war_file", "war_path")
-    rsync_as_user(env.war_path, env.war_file_version, env.sudo_user)
+    rsync_as_user(env.war_path_noversion, env.war_file, env.sudo_user)
 
     require("project_name")
     sudo(
@@ -109,6 +109,5 @@ def deploy_jar():
     require("jar_file", "jar_path")
     require("project_name")
 
-    print "the file is" + env.jar_file
     rsync_as_user("%s/" % env.app_config_dir, "%s/" % env.deploy_config_dir, env.sudo_user, delete=True,)
     rsync_as_user(env.jar_path, env.jar_file, env.sudo_user)
