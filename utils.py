@@ -42,9 +42,11 @@ def django_manage_run(virtualenv, path, command, user, interactive=False):
 
 def play_run(path, command, user):
     """
+    Run the command of a Play application.
+    Always uses the environment `--%console`.
     """
 
-    cmd = "%s %s %s" % (env.python_bin, env.play_bin, command)
+    cmd = "%s %s %s --%%console" % (env.python_bin, env.play_bin, command)
     with cd(path):
         sudo(cmd, user=user)
 
