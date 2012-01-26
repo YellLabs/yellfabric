@@ -90,7 +90,7 @@ def deploy_java():
     rsync_as_user(env.war_path, env.war_file, env.sudo_user)
 
     require("project_name")
-    if env.tomcat_context_path:
+    if env.get("tomcat_context_path"):
         sudo(
             "/usr/local/sbin/deploy_tomcat_webapp.py %s --context %s" % (env.project_name, env.tomcat_context_path) ,
             shell=False,
