@@ -58,9 +58,8 @@ def pip_requirements():
     cmd = "pip install --quiet --requirement %s" % env.requirements_path
 
     # append packages url if specified
-    packages_url = env.packages_url
-    if packages_url is not None:
-        cmd += " -f %s" % packages_url
+    if env.get("packages_url") is not None:
+        cmd += " -f %s" % env.get("packages_url")
 
     with context_managers.proxy(env.http_proxy, env.https_proxy):
         with context_managers.virtualenv(env.virtualenv_path):
