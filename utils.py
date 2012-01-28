@@ -145,7 +145,12 @@ def fetch_source(scm_type, scm_url, scm_ref=None, dirty=False):
             local("git clone %s %s" % (env.scm_url, tempdir))
             with lcd(tempdir):
                 if scm_ref != "master":
-                    local("git checkout -b %s %s" % (scm_ref, scm_ref))
+                    try:
+                        local("git checkout -b %s %s" % (scm_ref, scm_ref))
+                    except:
+                        # Remote branch may not exist locally yet - lets try that
+                        local("git fetch")
+                        local("git checkout -b %s origin/%s" % (scm_ref, scm_ref))
 
     #
     # Write out the version info
