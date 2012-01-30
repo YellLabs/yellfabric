@@ -142,7 +142,7 @@ def fetch_source(scm_type, scm_url, scm_ref=None, dirty=False):
                     ),
             )
         elif scm_type.lower() == "git":
-            local("git clone %s %s" % (env.scm_url, tempdir))
+            local("git clone --depth 1 %s %s" % (env.scm_url, tempdir))
             if scm_ref != "master":
                 with lcd(tempdir):
                     try:
