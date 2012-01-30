@@ -143,13 +143,13 @@ def fetch_source(scm_type, scm_url, scm_ref=None, dirty=False):
             )
         elif scm_type.lower() == "git":
             local("git clone %s %s" % (env.scm_url, tempdir))
-            with lcd(tempdir):
-                if scm_ref != "master":
+            if scm_ref != "master":
+                with lcd(tempdir):
                     try:
+                        # Remote tag
                         local("git checkout -b %s %s" % (scm_ref, scm_ref))
                     except:
-                        # Remote branch may not exist locally yet - lets try that
-                        local("git fetch")
+                        # Remote branch
                         local("git checkout -b %s origin/%s" % (scm_ref, scm_ref))
 
     #
