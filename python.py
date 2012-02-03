@@ -17,7 +17,7 @@ def setup_paths():
     env.requirements_path = \
         os.path.join(env.project_path, "requirements", "project.txt")
     env.wsgi_path = \
-        os.path.join(env.project_path, "deploy", "%s.wsgi" % env.project_name)
+        os.path.join(env.project_path, "deploy", "*.wsgi")
     env.config_source = "local_settings.py.template"
     env.config_target = "local_settings.py"
 
@@ -94,7 +94,7 @@ def refresh_wsgi():
     """
 
     require("wsgi_path", "sudo_user")
-    cmd = "touch %s" % env.wsgi_path
+    cmd = "touch -c %s" % env.wsgi_path
     sudo(cmd, user=env.sudo_user)
 
 
