@@ -34,7 +34,9 @@ def create_virtualenv():
         "https_proxy",
         "sudo_user",
     )
-    cmd = "virtualenv --python %s %s" % (env.python_bin, env.virtualenv_path)
+    # Added system-site-packages as environment
+    # uses global packages like MySQLdb
+    cmd = "virtualenv --python %s %s --system-site-packages" % (env.python_bin, env.virtualenv_path)
 
     with context_managers.proxy(env.http_proxy, env.https_proxy):
         # Needs to cd into a directory that the sudo user can temporarily write
