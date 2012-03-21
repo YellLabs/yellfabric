@@ -39,6 +39,26 @@ def restart():
     cmd = "supervisorctl restart play-%s" % env.project_name
     sudo(cmd, shell=False)
 
+def start_play():
+    """
+    Start the play application.
+    """
+
+    require("project_name")
+
+    cmd = "supervisorctl start play-%s" % env.project_name
+    sudo(cmd, shell=False)
+    
+def stop_play():
+    """
+    Stop the currently running play application.
+    """
+
+    require("project_name")
+
+    cmd = "supervisorctl stop play-%s" % env.project_name
+    sudo(cmd, shell=False)
+
 
 @runs_once
 def migratedb(command="apply"):
@@ -59,3 +79,39 @@ def deploy_play(ref=None, debug=False, dirty=False):
     sync_deps()
     migratedb()
     restart()
+
+def dirty_play_test(ref=None, debug=False, dirty=True):
+    """
+    Deploy LOCAL code and start app in test mode
+    """
+    require("project_name","sudo_test_user")
+
+    operations.fetch_render_copy(ref, debug, dirty, True)
+    sync_deps()
+    # migratedb() should not be required as new db created for tests
+    stop_play()
+    
+
+    utils.play_run(env.project_path, "test -XX:CompileCommand=exclude,jregex/Pretokenizer,next" , user=env.sudo_user)
+
+def dirty_play_autotest(ref=None, debug=False, dirty=True):
+    """
+    Deploy LOCAL code and run automatic tests
+    """
+
+    require("project_name","sudo_test_user")
+
+
+    operations.fetch_render_copy(ref, debug, dirty, True)
+    sync_deps()
+    # migratedb() should not be required as new db created for tests
+    stop_play()
+
+    utils.play_run(env.project_path, "autotest -XX:CompileCommand=exclude,jregex/Pretokenizer,next" , user=env.sudo_user)
+    # restart app in prod mode afterwards
+    start_play()
+    
+
+
+
+
