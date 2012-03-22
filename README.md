@@ -1,3 +1,5 @@
+# Yell Fabric
+
 ## About
 
 A common set of [Fabric](http://fabfile.org) tasks to reduce duplication of code between projects. For simple projects, you should only need to import these tasks and define your site-specific variables. More complex projects can wrap these tasks and their own in a local `deploy()` method.
@@ -5,10 +7,15 @@ A common set of [Fabric](http://fabfile.org) tasks to reduce duplication of code
 ## Usage
 
 1. Clone this `yellfabric` project.
-1. Create a virtualenv with `python2.6`
+        git clone git@github.com:YellLabs/yellfabric.git
+1. Create a new virtualenv. Preferably with `python2.6`
+        virtualenv -p python2.6 ~/venvs/fabric
 1. Activate the virtualenv.
-1. Install the requirements with `pip install -r requirements.txt`
-1. Symlink `yellfabric` into your virtualenv's `site-packages`.
+        source ~/venvs/fabric/bin/activate
+1. Install the project requirements.
+        pip install -r requirements.txt
+1. Symlink `yellfabric` into your virtualenv's `site-packages`
+        ln -s yellfabric ~/venvs/fabric/lib/python2.6/site-packages/
 1. Create a `fabfile.py` within your project using the example `fabfile.py.example`
 
 ## Design
