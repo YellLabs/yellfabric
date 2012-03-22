@@ -26,7 +26,15 @@ A common set of [Fabric](http://fabfile.org) tasks to reduce duplication of code
 
         ln -s ~/projects/yellfabric ~/venvs/fabric/lib/python2.6/site-packages/
 
-1. Create a `fabfile.py` within your project using the example `fabfile.py.example`
+1. Configure your SSH details in `~/.fabricrc`
+ - If using Fabric <1.4 set a username and private key path.
+
+            user = USERNAME
+            key_file = ~/.ssh/id_rsa
+
+ - If using Fabric >= 1.4 you can use your existing ssh_config.
+
+            use_ssh_config = true
 
 ## Design
 
