@@ -169,6 +169,8 @@ def fetch_source(scm_type, scm_url, scm_ref=None, dirty=False):
             )
         )
 
+    if "scm_path" in env:
+        tempdir = os.path.join(tempdir, env.scm_path)
     return tempdir
 
 
