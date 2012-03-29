@@ -109,6 +109,15 @@ def fetch_render_copy(ref=None, debug=False, dirty=False, copy_remote=False):
     config_source = os.path.join(env.tempdir, env.config_source)
     config_target = os.path.join(env.tempdir, env.config_target)
     utils.render_settings_template(config_source, config_target, env.settings_vars, debug)
+    
+    if env.custom_config_files: # the config var is not mandatory
+        if type(env.custom_config_files) is list: # the config var MUST BE a list
+            for custom_config_file in env.custom_config_files:
+                if type(custom_config_file) is dict: # of dictionaries
+                    if "source" in custom_config_file and "dest" in custom_config_file: # containing both "source" and "dest" keys
+                        custom_config_source = custom_config_file.get('source')
+                        custom_config_dest = custom_config_file.get('dest')
+                        utils.render_settings_template(custom_config_source, custom_config_dest, env.settings_vars, debug)
 
     if copy_remote:
         rsync_from_local()
