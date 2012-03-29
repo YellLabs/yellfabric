@@ -110,7 +110,7 @@ def fetch_render_copy(ref=None, debug=False, dirty=False, copy_remote=False):
     config_target = os.path.join(env.tempdir, env.config_target)
     utils.render_settings_template(config_source, config_target, env.settings_vars, debug)
     
-    if env.custom_config_files: # the config var is not mandatory
+    if "custom_config_files" in env: # the config var is not mandatory
         if type(env.custom_config_files) is list: # the config var MUST BE a list
             for custom_config_file in env.custom_config_files:
                 if type(custom_config_file) is dict: # of dictionaries
