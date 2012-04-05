@@ -101,6 +101,14 @@ def fetch_from_repo():
 def fetch_render_copy(ref=None, debug=False, dirty=False, copy_remote=False):
     """
     Fetch source code, render settings file, push remotely and delete checkout.
+
+    env.custom_config_files can be optionally used to specify key-value pairs
+    of config templates to be processed. The structure looks like:
+
+    env.custom_config_files = [
+        { "source": "conf/foo.conf.template", "dest": "conf/foo.conf" },
+        { "source": "conf/bar.conf.template", "dest": "conf/bar.conf" }
+    ]
     """
 
     require("scm_type", "scm_url", "config_source", "config_target", "settings_vars")
@@ -109,15 +117,17 @@ def fetch_render_copy(ref=None, debug=False, dirty=False, copy_remote=False):
     config_source = os.path.join(env.tempdir, env.config_source)
     config_target = os.path.join(env.tempdir, env.config_target)
     utils.render_settings_template(config_source, config_target, env.settings_vars, debug)
-    
-    if "custom_config_files" in env: # the config var is not mandatory
-        if type(env.custom_config_files) is list: # the config var MUST BE a list
-            for custom_config_file in env.custom_config_files:
-                if type(custom_config_file) is dict: # of dictionaries
-                    if "source" in custom_config_file and "dest" in custom_config_file: # containing both "source" and "dest" keys
-                        custom_config_source = custom_config_file.get('source')
-                        custom_config_dest = custom_config_file.get('dest')
-                        utils.render_settings_template(custom_config_source, custom_config_dest, env.settings_vars, debug)
+
+    # Additional config templates are optional.
+    if "custom_config_files" in env:
+        for custom_config_file in env.custom_config_files:
+            try:
+                config_source = os.path.join(env.tempdir, custom_config_file['source'])
+                config_target = os.path.join(env.tempdir, custom_config_file['dest'])
+                utils.render_settings_template(config_source, config_target, env.settings_vars, debug)
+            except KeyError:
+                # Blow up if the structure isn't as expected.
+                abort("The structure of env.custom_config_files is invalid")
 
     if copy_remote:
         rsync_from_local()
