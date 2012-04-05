@@ -36,6 +36,15 @@ A common set of [Fabric](http://fabfile.org) tasks to reduce duplication of code
 
             use_ssh_config = true
 
+## Switches
+
+- `env.custom_config_files`: A list of dictionaries detailing additional config templates to be rendered and copied.
+
+        env.custom_config_files = [
+            { "source": "conf/foo.conf.template", "dest": "conf/foo.conf" },
+            { "source": "conf/bar.conf.template", "dest": "conf/bar.conf" }
+        ]
+
 ## Design
 
 I was originally hoping to avoid global `env` variables and have each method accept and return it's own variables. However doing so would mean that they wouldn't be easily callable as standalone Fabric tasks, unless you specified all arguments by hand (like absolute paths) or wrap them in one-to-one classes, which kind of defeats the point of removing duplication. Instead I have attempted to make it clear what global variables each method uses and restrict utility methods for modifying them.
