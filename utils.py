@@ -15,7 +15,7 @@ from string import replace
 from xml.dom import minidom
 
 from fabric.api import env, prompt, runs_once, sudo, local, puts, lcd
-from fabric.context_managers import hide, cd
+from fabric.context_managers import hide, cd, prefix
 #from fabric.contrib.files import append
 
 
@@ -48,7 +48,10 @@ def play_run(path, command, user):
 
     cmd = "%s %s %s --%%console" % (env.python_bin, env.play_bin, command)
     with cd(path):
-        sudo(cmd, user=user)
+        # Make absolutely sure resulting directories are readable by the
+        # the Play process which runs as a different user.
+        with prefix('umask 0002'):
+            sudo(cmd, user=user)
 
 
 @runs_once
