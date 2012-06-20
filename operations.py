@@ -2,6 +2,7 @@ import java
 import python
 import glassfish
 import play
+import static
 import utils
 
 import os.path
@@ -30,6 +31,8 @@ def fab_setup_paths():
         glassfish.setup_paths()
     elif env.lang == "play":
         play.setup_paths()
+    elif env.lang == "static":
+        static.setup_paths()
     else:
         abort("Project language %r unknown" % env.lang)
 
