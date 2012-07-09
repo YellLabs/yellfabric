@@ -125,8 +125,6 @@ def scm_get_info(scm_type, scm_ref=None, directory=False):
 def fetch_source(scm_type, scm_url, scm_ref=None, dirty=False):
     if dirty:
         tempdir = os.path.abspath(os.getcwd())
-    elif "tempdir" in env:
-        tempdir = env.tempdir
     else:
         tempdir = tempfile.mkdtemp()
         os.chmod(tempdir, 0755)
