@@ -175,7 +175,7 @@ def fetch_source(scm_type, scm_url, scm_ref=None, dirty=False):
     return tempdir
 
 
-def delete_source(tempdir, dirty=False):
+def delete_source_conditional(tempdir, dirty=False):
     if dirty:
         return
 

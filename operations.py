@@ -135,4 +135,4 @@ def fetch_render_copy(ref=None, debug=False, dirty=False, copy_remote=False):
     if copy_remote:
         rsync_from_local()
 
-    utils.delete_source(env.tempdir, dirty)
+    utils.delete_source_conditional(env.tempdir, dirty)
