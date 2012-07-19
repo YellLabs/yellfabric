@@ -136,3 +136,11 @@ def fetch_render_copy(ref=None, debug=False, dirty=False, copy_remote=False):
         rsync_from_local()
 
     utils.delete_source_conditional(env.tempdir, dirty)
+
+
+def render_settings_template(debug=False):
+    """
+    Render settings file - parameters will be set based upon parms in fabfile
+
+    """
+    utils.render_settings_template(env.config_source, env.config_target, env.settings_vars, debug)
