@@ -101,7 +101,7 @@ def fetch_from_repo():
         local("wget -O%s '%s'" % (name, url))
 
 
-def fetch_render_copy(ref=None, debug=False, dirty=False, copy_remote=False):
+def fetch_render_copy(ref=None, debug=False, dirty=False, copy_remote=False, build_local_cmd=None):
     """
     Fetch source code, render settings file, push remotely and delete checkout.
 
@@ -131,6 +131,10 @@ def fetch_render_copy(ref=None, debug=False, dirty=False, copy_remote=False):
             except KeyError:
                 # Blow up if the structure isn't as expected.
                 abort("The structure of env.custom_config_files is invalid")
+
+    # Don't try to handle any errors here - the deploy should fail.
+    if build_local_cmd:
+        build_local_cmd(env.tempdir)
 
     if copy_remote:
         rsync_from_local()
