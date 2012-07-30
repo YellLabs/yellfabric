@@ -44,12 +44,16 @@ def scm_echo_info():
     pprint.pprint(utils.scm_get_info(env.scm_type))
 
 
-def rsync_from_local():
+def rsync_from_local(remote_dir=''):
     """
     Push a local checkout of the code to a remote machine.
     """
 
-    require("tempdir", "project_path", "sudo_user")
+    if remote_dir in (''):
+        require("project_path")
+        remote_dir = env.project_path
+
+    require("tempdir", "sudo_user")
 
     rsync_exclude = ["*.pyc"]
     rsync_opts = []
@@ -62,7 +66,7 @@ def rsync_from_local():
 
     rsync_project(
         local_dir="%s/" % env.tempdir,
-        remote_dir="%s/" % env.project_path,
+        remote_dir="%s/" % remote_dir,
         exclude=rsync_exclude,
         delete=True,
         extra_opts=rsync_opts)
