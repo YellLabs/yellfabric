@@ -15,20 +15,20 @@ def run_script():
     require("sudo_user")
     require("jdbc_url", "jdbc_username", "jdbc_password", "changelog_filename")
 
-    remote_dir = run('mktemp -d')
+    remote_dir = sudo('mktemp -d', user = env.sudo_user)
     rsync_from_local(remote_dir)
 
     with cd('%s/processed-liquibase/changelog' % (remote_dir)):
-        run("sh /usr/bin/liquibase" +
+        sudo("sh /usr/bin/liquibase" +
             " --driver=com.mysql.jdbc.Driver" +
             " --classpath=/usr/share/java/mysql-connector-java.jar" +
             " --url=%s" % (env.jdbc_url) +
             " --username=%s" % (env.jdbc_username) +
             " --password=%s" % (env.jdbc_password) +
             " --changeLogFile=%s" % (env.changelog_filename) +
-            " update")
+            " update", user = env.sudo_user)
 
-    run ('rm -rf %s' % (remote_dir))
+    sudo('rm -rf %s' % (remote_dir), user = env.sudo_user)
 
 def setup_paths():
     require("java_root", "java_conf", "java_log", "project_name")
