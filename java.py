@@ -47,11 +47,14 @@ def render_settings_template():
     os.mkdir(target_dir)
     context = template_context(env.settings_vars)
 
-    for conf_file in os.listdir(source_dir):
-        template_to_file(os.path.join(source_dir, conf_file),
+    for root, dirs, files in os.walk(source_dir):
+        relative_path = os.path.relpath(root, source_dir)
+        for file in files:
+            conf_file = os.path.join(relative_path, file)
+            template_to_file(os.path.join(source_dir, conf_file),
                          os.path.join(target_dir, conf_file),
                          context)
-
+        
     env.deploy_config_dir = target_dir
 
 

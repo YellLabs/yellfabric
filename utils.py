@@ -225,6 +225,11 @@ def template_to_file(source, target, context):
     rsynced.
     """
 
+    # make sure directory exists
+    dir = os.path.dirname(target)
+    if not os.path.exists(dir):
+        os.makedirs(dir)
+        
     with open(target, "w") as target_file:
         with open(source) as source_file:
             text = source_file.read() % context
