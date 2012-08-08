@@ -7,7 +7,7 @@ from fabric.contrib.project import rsync_project
 from fabric.context_managers import cd
 
 
-def run_script():
+def migratedb():
     require("jdbc_url", "jdbc_username", "jdbc_password", "changelog_filename")
 
     local_tempdir = tempfile.mkdtemp()
