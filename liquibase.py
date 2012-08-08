@@ -8,6 +8,8 @@ from fabric.context_managers import cd
 
 
 def migratedb():
+    setup_paths()
+
     require("jdbc_url", "jdbc_username", "jdbc_password", "changelog_filename")
 
     local_tempdir = tempfile.mkdtemp()
