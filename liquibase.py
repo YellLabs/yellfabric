@@ -6,7 +6,7 @@ from fabric.api import local, env, runs_once, require, run
 from fabric.contrib.project import rsync_project
 from fabric.context_managers import cd
 
-
+@runs_once
 def migratedb():
     setup_paths()
 
@@ -35,6 +35,7 @@ def migratedb():
     run('rm -rf %s' % (remote_tempdir))
     shutil.rmtree(local_tempdir)
 
+@runs_once
 def setup_paths():
     require("project_name")
 
