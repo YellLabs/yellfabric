@@ -1,6 +1,4 @@
-import glob
 import os.path
-import sys
 import tempfile
 import shutil
 
@@ -36,6 +34,6 @@ def run_script():
     shutil.rmtree(local_tempdir)
 
 def setup_paths():
-    require("java_root", "java_conf", "java_log", "project_name")
+    require("project_name")
 
     env.db_script_archive = "%s-liquibase.tar.gz" % env.project_name
