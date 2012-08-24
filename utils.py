@@ -11,7 +11,7 @@ import os
 import shutil
 import tempfile
 
-from string import replace
+from string import replace, Template
 from xml.dom import minidom
 
 from fabric.api import env, prompt, runs_once, sudo, local, puts, lcd
@@ -222,10 +222,14 @@ def template_context(vars):
 def template_to_file(source, target, context):
     """
     Populate templated local_settings and place it in the tempdir to be
-    rsynced.
+    rsynced. If `env.template_key = '$'` then it will use string.Template.
+    Otherwise it will fallback to Python `%()s` string interpolation.
     """
 
     with open(target, "w") as target_file:
         with open(source) as source_file:
-            text = source_file.read() % context
+            if env.get('template_key') == '$':
+                text = Template(source_file.read()).substitute(context)
+            else:
+                text = source_file.read() % context
         target_file.write(text)
