@@ -5,6 +5,7 @@ import play
 import static
 import utils
 
+import csv
 import os.path
 import pprint
 import glob
@@ -148,3 +149,42 @@ def render_settings_template(debug=False):
 
     """
     utils.render_settings_template(env.config_source, env.config_target, env.settings_vars, debug)
+
+
+def load_extdata(filename):
+    """
+    Populate env.extdata as a dictionary of Puppet's extlookup/extdata
+    key+value entries for later use by extlookup().
+
+    Takes a single CSV file as a mandatory argument.
+    """
+
+    if not os.path.exists(filename):
+        abort("File %r not found" % filename)
+
+    extdata = csv.reader(open(filename))
+    env.extdata = {}
+
+    for row in extdata:
+        if len(row) < 1:
+            continue
+
+        env.extdata[row[0]] = row[1:]
+
+
+def extlookup(key):
+    """
+    Lookup a password from by Puppet's extlookup/extdata store.
+    This requires that env.extdata has been populated by load_extdata()
+
+    Currently returns a single value that is only suitable for passwords.
+    """
+
+    require("extdata", provided_by="load_extdata")
+
+    value = env.extdata.get(key, [])
+
+    if len(value) != 1:
+        abort("Could not extlookup single value for key %r" % key)
+
+    return value[0]
