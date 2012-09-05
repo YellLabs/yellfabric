@@ -39,7 +39,12 @@ def setup_paths():
 
 @runs_once
 def render_settings_template():
-    non_template_exts = [".jks", ".pkcs12", ".pem", ".crt", ".cer"]
+    try:
+        env.non_template_exts
+    except NameError:
+       env.non_template_exts = []
+    except AttributeError:
+       env.non_template_exts = []
 
     tempdir = tempfile.mkdtemp()
     local("tar -C'%s' -xzf '%s'" % (tempdir, env.app_config_archive))
