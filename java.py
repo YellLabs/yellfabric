@@ -57,7 +57,7 @@ def render_settings_template():
 
     for conf_file in os.listdir(source_dir):
         file_name, file_extension = os.path.splitext(conf_file)
-        if file_extension in non_template_exts:
+        if file_extension in env.non_template_exts:
             shutil.copy(os.path.join(source_dir, conf_file),
                          os.path.join(target_dir, conf_file))
         else:
