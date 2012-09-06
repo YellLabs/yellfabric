@@ -213,7 +213,7 @@ def render_custom_templates(tempdir, settings, debug):
         { "source": "conf/bar.conf.template", "dest": "conf/bar.conf" }
     ]
     """
-    
+
     # Additional config templates are optional.
     if "custom_config_files" in env:
         for custom_config_file in env.custom_config_files:
@@ -226,8 +226,8 @@ def render_custom_templates(tempdir, settings, debug):
                 import sys, traceback
                 traceback.print_exc()
                 abort("The structure of env.custom_config_files is invalid")
-                
-                
+
+
 @runs_once
 def template_context(vars):
     """
@@ -250,6 +250,11 @@ def template_to_file(source, target, context):
     rsynced. If `env.template_key = '$'` then it will use string.Template.
     Otherwise it will fallback to Python `%()s` string interpolation.
     """
+
+    # make sure directory exists
+    dir = os.path.dirname(target)
+    if not os.path.exists(dir):
+        os.makedirs(dir)
 
     with open(target, "w") as target_file:
         with open(source) as source_file:

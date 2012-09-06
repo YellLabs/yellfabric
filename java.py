@@ -55,15 +55,20 @@ def render_settings_template():
     os.mkdir(target_dir)
     context = template_context(env.settings_vars)
 
-    for conf_file in os.listdir(source_dir):
-        file_name, file_extension = os.path.splitext(conf_file)
-        if file_extension in env.non_template_exts:
-            shutil.copy(os.path.join(source_dir, conf_file),
-                         os.path.join(target_dir, conf_file))
-        else:
-            template_to_file(os.path.join(source_dir, conf_file),
-                         os.path.join(target_dir, conf_file),
-                         context)
+    for root, dirs, files in os.walk(source_dir):
+        relative_path = os.path.relpath(root, source_dir)
+
+        for conf_file in files:
+            conf_file = os.path.join(relative_path, conf_file)
+            file_extension = os.path.splitext(conf_file)[1]
+
+            if file_extension in env.non_template_exts:
+                shutil.copy(os.path.join(source_dir, conf_file),
+                             os.path.join(target_dir, conf_file))
+            else:
+                template_to_file(os.path.join(source_dir, conf_file),
+                             os.path.join(target_dir, conf_file),
+                             context)
 
     env.deploy_config_dir = target_dir
 
