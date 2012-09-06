@@ -11,7 +11,7 @@ import os
 import shutil
 import tempfile
 
-from string import replace
+from string import replace, Template
 from xml.dom import minidom
 
 from fabric.api import env, prompt, runs_once, sudo, local, puts, lcd
@@ -203,6 +203,31 @@ def render_settings_template(source, target, settings, debug):
     template_to_file(source, target, context)
 
 
+def render_custom_templates(tempdir, settings, debug):
+    """
+    env.custom_config_files can be optionally used to specify key-value pairs
+    of config templates to be processed. The structure looks like:
+
+    env.custom_config_files = [
+        { "source": "conf/foo.conf.template", "dest": "conf/foo.conf" },
+        { "source": "conf/bar.conf.template", "dest": "conf/bar.conf" }
+    ]
+    """
+    
+    # Additional config templates are optional.
+    if "custom_config_files" in env:
+        for custom_config_file in env.custom_config_files:
+            try:
+                config_source = os.path.join(tempdir, custom_config_file['source'])
+                config_target = os.path.join(tempdir, custom_config_file['dest'])
+                render_settings_template(config_source, config_target, settings, debug)
+            except KeyError:
+                # Blow up if the structure isn't as expected.
+                import sys, traceback
+                traceback.print_exc()
+                abort("The structure of env.custom_config_files is invalid")
+                
+                
 @runs_once
 def template_context(vars):
     """
@@ -222,7 +247,8 @@ def template_context(vars):
 def template_to_file(source, target, context):
     """
     Populate templated local_settings and place it in the tempdir to be
-    rsynced.
+    rsynced. If `env.template_key = '$'` then it will use string.Template.
+    Otherwise it will fallback to Python `%()s` string interpolation.
     """
 
     # make sure directory exists
@@ -232,5 +258,8 @@ def template_to_file(source, target, context):
         
     with open(target, "w") as target_file:
         with open(source) as source_file:
-            text = source_file.read() % context
+            if env.get('template_key') == '$':
+                text = Template(source_file.read()).substitute(context)
+            else:
+                text = source_file.read() % context
         target_file.write(text)

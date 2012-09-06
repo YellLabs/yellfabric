@@ -1,6 +1,7 @@
 import glob
 import os.path
 import sys
+import shutil
 import tempfile
 
 from fabric.api import local, env, sudo, runs_once, require
@@ -12,10 +13,10 @@ from utils import template_context, template_to_file
 @runs_once
 def setup_paths():
     require("java_root", "java_conf", "java_log", "project_name")
-    
+
     env.jar_file = "%s.jar" % env.project_name
     env.jar_path = os.path.join(env.jar_root, env.jar_file)
-    
+
     env.war_file = "%s.war" % env.project_name
     env.war_path = os.path.join(env.java_root, env.war_file)
 
@@ -38,6 +39,13 @@ def setup_paths():
 
 @runs_once
 def render_settings_template():
+    try:
+        env.non_template_exts
+    except NameError:
+       env.non_template_exts = []
+    except AttributeError:
+       env.non_template_exts = []
+
     tempdir = tempfile.mkdtemp()
     local("tar -C'%s' -xzf '%s'" % (tempdir, env.app_config_archive))
 
@@ -51,9 +59,14 @@ def render_settings_template():
         relative_path = os.path.relpath(root, source_dir)
         for file in files:
             conf_file = os.path.join(relative_path, file)
-            template_to_file(os.path.join(source_dir, conf_file),
-                         os.path.join(target_dir, conf_file),
-                         context)
+            file_name, file_extension = os.path.splitext(conf_file)
+            if file_extension in env.non_template_exts:
+                shutil.copy(os.path.join(source_dir, conf_file),
+                             os.path.join(target_dir, conf_file))
+            else:
+                template_to_file(os.path.join(source_dir, conf_file),
+                             os.path.join(target_dir, conf_file),
+                             context)
         
     env.deploy_config_dir = target_dir
 
@@ -102,7 +115,7 @@ def deploy_java():
         sudo(
             "/usr/local/sbin/deploy_tomcat_webapp.py %s" % env.project_name ,
             shell=False,
-        )        
+        )
 
 def deploy_jar():
     render_settings_template()

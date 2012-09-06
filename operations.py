@@ -5,6 +5,7 @@ import play
 import static
 import utils
 
+import csv
 import os.path
 import pprint
 import glob
@@ -104,14 +105,6 @@ def fetch_from_repo():
 def fetch_render_copy(ref=None, debug=False, dirty=False, copy_remote=False, build_local_cmd=None):
     """
     Fetch source code, render settings file, push remotely and delete checkout.
-
-    env.custom_config_files can be optionally used to specify key-value pairs
-    of config templates to be processed. The structure looks like:
-
-    env.custom_config_files = [
-        { "source": "conf/foo.conf.template", "dest": "conf/foo.conf" },
-        { "source": "conf/bar.conf.template", "dest": "conf/bar.conf" }
-    ]
     """
 
     require("scm_type", "scm_url", "config_source", "config_target", "settings_vars")
@@ -119,18 +112,10 @@ def fetch_render_copy(ref=None, debug=False, dirty=False, copy_remote=False, bui
     env.tempdir = utils.fetch_source(env.scm_type, env.scm_url, ref, dirty)
     config_source = os.path.join(env.tempdir, env.config_source)
     config_target = os.path.join(env.tempdir, env.config_target)
-    utils.render_settings_template(config_source, config_target, env.settings_vars, debug)
 
-    # Additional config templates are optional.
-    if "custom_config_files" in env:
-        for custom_config_file in env.custom_config_files:
-            try:
-                config_source = os.path.join(env.tempdir, custom_config_file['source'])
-                config_target = os.path.join(env.tempdir, custom_config_file['dest'])
-                utils.render_settings_template(config_source, config_target, env.settings_vars, debug)
-            except KeyError:
-                # Blow up if the structure isn't as expected.
-                abort("The structure of env.custom_config_files is invalid")
+    utils.render_settings_template(config_source, config_target, env.settings_vars, debug)
+    
+    utils.render_custom_templates(env.tempdir, env.settings_vars, debug)
 
     # Don't try to handle any errors here - the deploy should fail.
     if build_local_cmd:
@@ -144,7 +129,47 @@ def fetch_render_copy(ref=None, debug=False, dirty=False, copy_remote=False, bui
 
 def render_settings_template(debug=False):
     """
-    Render settings file - parameters will be set based upon parms in fabfile
-
+    Render settings files - parameters will be set based upon parms in fabfile
     """
     utils.render_settings_template(env.config_source, env.config_target, env.settings_vars, debug)
+    
+    utils.render_custom_templates(".", env.settings_vars, debug)
+                
+
+def load_extdata(filename):
+    """
+    Populate env.extdata as a dictionary of Puppet's extlookup/extdata
+    key+value entries for later use by extlookup().
+
+    Takes a single CSV file as a mandatory argument.
+    """
+
+    if not os.path.exists(filename):
+        abort("File %r not found" % filename)
+
+    extdata = csv.reader(open(filename))
+    env.extdata = {}
+
+    for row in extdata:
+        if len(row) < 1:
+            continue
+
+        env.extdata[row[0]] = row[1:]
+
+
+def extlookup(key):
+    """
+    Lookup a password from by Puppet's extlookup/extdata store.
+    This requires that env.extdata has been populated by load_extdata()
+
+    Currently returns a single value that is only suitable for passwords.
+    """
+
+    require("extdata", provided_by="load_extdata")
+
+    value = env.extdata.get(key, [])
+
+    if len(value) != 1:
+        abort("Could not extlookup single value for key %r" % key)
+
+    return value[0]
