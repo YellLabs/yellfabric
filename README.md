@@ -49,6 +49,10 @@ A common set of [Fabric](http://fabfile.org) tasks to reduce duplication of code
 
         env.template_key = '$'
 
+- `env.non_template_exts`: An array of file extensions that will not be parsed for template placeholders. Files with these extensions will be copied as-is. Currently only supported by `yellfabric.java`.
+
+        env.non_template_exts = ['.pem', '.crt', '.key']
+
 ## Design
 
 I was originally hoping to avoid global `env` variables and have each method accept and return it's own variables. However doing so would mean that they wouldn't be easily callable as standalone Fabric tasks, unless you specified all arguments by hand (like absolute paths) or wrap them in one-to-one classes, which kind of defeats the point of removing duplication. Instead I have attempted to make it clear what global variables each method uses and restrict utility methods for modifying them.
