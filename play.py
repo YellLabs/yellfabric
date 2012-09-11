@@ -29,14 +29,20 @@ def sync_deps():
         utils.play_run(env.project_path, "dependencies --sync", user=env.sudo_user)
 
 
-def tail():
+def tail(stderr=False):
     """
     Tail the output of an application using supervisord.
+
+    stderr argument can be supplied to return STDERR instead of STDOUT.
     """
 
     require("project_name")
 
     cmd = "supervisorctl tail play-%s" % env.project_name
+
+    if stderr:
+        cmd += " stderr"
+
     sudo(cmd, shell=False)
 
 
