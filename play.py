@@ -29,6 +29,34 @@ def sync_deps():
         utils.play_run(env.project_path, "dependencies --sync", user=env.sudo_user)
 
 
+def tail(stderr=False):
+    """
+    Tail the output of an application using supervisord.
+
+    stderr argument can be supplied to return STDERR instead of STDOUT.
+    """
+
+    require("project_name")
+
+    cmd = "supervisorctl tail play-%s" % env.project_name
+
+    if stderr:
+        cmd += " stderr"
+
+    sudo(cmd, shell=False)
+
+
+def status():
+    """
+    Query the status of an application using supervisord.
+    """
+
+    require("project_name")
+
+    cmd = "supervisorctl status play-%s" % env.project_name
+    sudo(cmd, shell=False)
+
+
 def restart():
     """
     Restart the application using supervisord.
@@ -39,6 +67,7 @@ def restart():
     cmd = "supervisorctl restart play-%s" % env.project_name
     sudo(cmd, shell=False)
 
+
 def start_play():
     """
     Start the play application.
@@ -48,6 +77,7 @@ def start_play():
 
     cmd = "supervisorctl start play-%s" % env.project_name
     sudo(cmd, shell=False)
+
     
 def stop_play():
     """
