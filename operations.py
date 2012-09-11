@@ -144,6 +144,7 @@ def load_extdata(filename):
     Takes a single CSV file as a mandatory argument.
     """
 
+    filename = os.path.expanduser(filename)
     if not os.path.exists(filename):
         abort("File %r not found" % filename)
 
