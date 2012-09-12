@@ -118,6 +118,16 @@ def deploy_java():
     sudo(cmd, shell=False)
 
 
+def undeploy_java():
+    require("sudo_user", "tomcat_deploy_webapp", "project_name")
+    cmd = "%s %s --action undeploy" % (env.tomcat_deploy_webapp, env.project_name)
+
+    if "tomcat_context_path" in env:
+        cmd += " --context %s" % env.tomcat_context_path
+
+    sudo(cmd, shell=False)
+
+
 def deploy_jar():
     render_settings_template()
 
