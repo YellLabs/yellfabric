@@ -23,6 +23,8 @@ def setup_paths():
     env.app_config_archive = "%s-config.tar.gz" % env.project_name
     env.sql_archive = "%s-sql.tar.gz" % env.project_name
 
+    env.tomcat_deploy_webapp = "/usr/local/sbin/deploy_tomcat_webapp.py"
+
     try:
        env.config_dir_name
     except NameError:
@@ -107,8 +109,8 @@ def deploy_java():
     require("war_file", "war_path")
     rsync_as_user(env.war_path, env.war_file, env.sudo_user)
 
-    require("project_name")
-    cmd = "/usr/local/sbin/deploy_tomcat_webapp.py %s" % env.project_name
+    require("tomcat_deploy_webapp", "project_name")
+    cmd = "%s %s" % (env.tomcat_deploy_webapp, env.project_name)
 
     if "tomcat_context_path" in env:
         cmd += " --context %s" % env.tomcat_context_path
