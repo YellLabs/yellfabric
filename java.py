@@ -23,6 +23,8 @@ def setup_paths():
     env.app_config_archive = "%s-config.tar.gz" % env.project_name
     env.sql_archive = "%s-sql.tar.gz" % env.project_name
 
+    env.tomcat_deploy_webapp = "/usr/local/sbin/deploy_tomcat_webapp.py"
+
     try:
        env.config_dir_name
     except NameError:
@@ -107,17 +109,24 @@ def deploy_java():
     require("war_file", "war_path")
     rsync_as_user(env.war_path, env.war_file, env.sudo_user)
 
-    require("project_name")
-    if env.get("tomcat_context_path"):
-        sudo(
-            "/usr/local/sbin/deploy_tomcat_webapp.py %s --context %s" % (env.project_name, env.tomcat_context_path) ,
-            shell=False,
-        )
-    else:
-        sudo(
-            "/usr/local/sbin/deploy_tomcat_webapp.py %s" % env.project_name ,
-            shell=False,
-        )
+    require("tomcat_deploy_webapp", "project_name")
+    cmd = "%s %s" % (env.tomcat_deploy_webapp, env.project_name)
+
+    if "tomcat_context_path" in env:
+        cmd += " --context %s" % env.tomcat_context_path
+
+    sudo(cmd, shell=False)
+
+
+def undeploy_java():
+    require("sudo_user", "tomcat_deploy_webapp", "project_name")
+    cmd = "%s %s --action undeploy" % (env.tomcat_deploy_webapp, env.project_name)
+
+    if "tomcat_context_path" in env:
+        cmd += " --context %s" % env.tomcat_context_path
+
+    sudo(cmd, shell=False)
+
 
 def deploy_jar():
     render_settings_template()
