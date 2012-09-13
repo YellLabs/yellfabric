@@ -229,7 +229,7 @@ def render_custom_templates(tempdir, settings, debug):
 
 
 @runs_once
-def template_context(vars):
+def template_context(var_names):
     """
     Compiles a list of variables and their values from Fabric's env into a
     dictionary which can be used to render a template. Any values that aren't
@@ -237,9 +237,9 @@ def template_context(vars):
     """
 
     context = {}
-    for var in vars:
-        context[var] = \
-            env.get(var) or prompt('Enter settings var for %r:' % var)
+    for var_name in var_names:
+        context[var_name] = \
+            env.get(var_name) or prompt('Enter settings var for %r:' % var_name)
 
     return context
 
