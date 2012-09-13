@@ -238,8 +238,12 @@ def template_context(var_names):
 
     context = {}
     for var_name in var_names:
-        context[var_name] = \
-            env.get(var_name) or prompt('Enter settings var for %r:' % var_name)
+        var = env.get(var_name, None)
+
+        if var == None:
+            var = prompt('Enter settings var for %r:' % var_name)
+
+        context[var_name] = var
 
     return context
 
