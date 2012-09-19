@@ -138,3 +138,11 @@ def deploy_jar():
 
     rsync_as_user("%s/" % env.app_config_dir, "%s/" % env.deploy_config_dir, env.sudo_user, delete=True,)
     rsync_as_user(env.jar_path, env.jar_file, env.sudo_user)
+
+
+def deploy_etl():
+    deploy_jar()
+
+    require("project_name")
+    cmd = "supervisorctl restart etl-%s" % env.project_name
+    sudo(cmd, shell=False)
