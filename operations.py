@@ -77,7 +77,7 @@ def use_maven_build():
         env.war_file = glob.glob("target/*.war")[0]
         env.app_config_archive = glob.glob("target/*-config.tar.gz")[0]
     except IndexError:
-         sys.exit("Failed to find maven build products in target directory")
+        abort("Failed to find maven build products in target directory")
 
 
 @runs_once
