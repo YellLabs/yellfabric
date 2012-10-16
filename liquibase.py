@@ -7,8 +7,8 @@ from fabric.contrib.project import rsync_project
 from fabric.context_managers import cd
 
 @runs_once
-def migratedb():
-    setup_paths()
+def migratedb(file:''):
+    setup_paths(file)
 
     require("jdbc_url", "jdbc_username", "jdbc_password", "changelog_filename")
 
@@ -36,7 +36,9 @@ def migratedb():
     shutil.rmtree(local_tempdir)
 
 @runs_once
-def setup_paths():
+def setup_paths(file):
     require("project_name")
-
-    env.db_script_archive = "%s-liquibase.tar.gz" % env.project_name
+    if file == '':
+       env.db_script_archive = "%s-liquibase.tar.gz" % env.project_name
+    else
+       env.db_script_archive = file
