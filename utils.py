@@ -100,6 +100,7 @@ def scm_get_info(scm_type, scm_ref=None, directory=False):
                         .getAttribute("revision"),
                     "url": dom.getElementsByTagName("url")[0] \
                         .firstChild.wholeText,
+                     "branch": scm_ref,
                 }
 
     elif scm_type.lower() == "git":
@@ -117,6 +118,7 @@ def scm_get_info(scm_type, scm_ref=None, directory=False):
                     "type": scm_type,
                     "rev": revision,
                     "url": repo,
+                    "branch": scm_ref,
                 }
 
     return scm_info
@@ -158,6 +160,7 @@ def fetch_source(scm_type, scm_url, scm_ref=None, dirty=False):
     #
     with lcd(tempdir):
         scm_info = scm_get_info(scm_type, scm_ref, tempdir)
+
         filename = "version"
         local("echo \"%s\" > %s" \
             % (
