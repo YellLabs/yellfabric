@@ -162,9 +162,8 @@ def render_ci_props(scm_type="git"):
     build_props['jenkinsUrl']=jenkins_url
     build_props['sourceControlSystem']=scm_type
     build_props['sourceControlRevision']=scm_revision
-    build_props['branch']=scm_branch
-    build_props['revision']=scm_revision
-    build_props['commit']=scm_commit
+    build_props['sourceControlBranch']=scm_branch
+    build_props['sourceControlCommit']=scm_commit
 
     json_props = json.dumps(build_props)
 
