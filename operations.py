@@ -140,13 +140,11 @@ def render_ci_props(scm_type="git"):
     scm_type = scm_type.lower()
 
     if(scm_type == "git"):
-        scm_revision = os.environ.get("GIT_REVISION")
+        scm_revision = os.environ.get("GIT_COMMIT")
         scm_branch = os.environ.get("GIT_BRANCH")
-        scm_commit = os.environ.get("GIT_COMMIT")
     if(scm_type == "svn"):
         scm_revision = os.environ.get("SVN_REVISION")
         scm_branch = os.environ.get("SVN_BRANCH")
-        scm_commit = os.environ.get("SVN_COMMIT")
     
     build_props = {}
     build_props['name']=env.project_name
@@ -163,7 +161,6 @@ def render_ci_props(scm_type="git"):
     build_props['sourceControlSystem']=scm_type
     build_props['sourceControlRevision']=scm_revision
     build_props['sourceControlBranch']=scm_branch
-    build_props['sourceControlCommit']=scm_commit
 
     json_props = json.dumps(build_props)
 
