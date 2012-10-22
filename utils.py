@@ -10,6 +10,7 @@ import context_managers
 import os
 import shutil
 import tempfile
+import json
 
 from string import replace, Template
 from xml.dom import minidom
@@ -160,18 +161,15 @@ def fetch_source(scm_type, scm_url, scm_ref=None, dirty=False):
     #
     with lcd(tempdir):
         scm_info = scm_get_info(scm_type, scm_ref, tempdir)
+        json_info = json.dumps(scm_info)
 
-        filename = "version"
-        local("echo \"%s\" > %s" \
-            % (
-                replace(
-                    str(scm_info),
-                    ' (fetch)',
-                    '',
-                ),
-                filename,
-            )
-        )
+        # remove (fetch) string
+        json_info = json_info.replace(' (fetch)', '')
+        # remove tab character after origin
+        json_info = json_info.replace('\\t', ' ')
+
+        version_file = open("version", "w")
+        version_file.write(json_info)
 
     if "scm_path" in env:
         tempdir = os.path.join(tempdir, env.scm_path)
