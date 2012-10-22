@@ -9,6 +9,7 @@ import csv
 import os.path
 import pprint
 import glob
+import json
 
 from fabric.api import env, require, runs_once, local
 from fabric.utils import abort
@@ -125,6 +126,51 @@ def fetch_render_copy(ref=None, debug=False, dirty=False, copy_remote=False, bui
         rsync_from_local()
 
     utils.delete_source_conditional(env.tempdir, dirty)
+
+
+def render_ci_props(scm_type="git"):
+    """
+    output ci-build properties to a file called ci_props.json in current workspace
+    """
+
+    build_number = os.environ.get("BUILD_NUMBER")
+    job_name = os.environ.get("JOB_NAME")
+    jenkins_url = os.environ.get("JENKINS_URL")
+    job_url = os.environ.get("JOB_URL")
+    scm_type = scm_type.lower()
+
+    if(scm_type == "git"):
+        scm_revision = os.environ.get("GIT_REVISION")
+        scm_branch = os.environ.get("GIT_BRANCH")
+        scm_commit = os.environ.get("GIT_COMMIT")
+    if(scm_type == "svn"):
+        scm_revision = os.environ.get("SVN_REVISION")
+        scm_branch = os.environ.get("SVN_BRANCH")
+        scm_commit = os.environ.get("SVN_COMMIT")
+    
+    build_props = {}
+    build_props['name']=env.project_name
+    build_props['status']='ok'
+    if(env.get("project_version")==None):
+        build_props['version']="project_version not defined in fabfile.py"
+    else:
+        build_props['version']=env.project_version
+
+    build_props['buildNumber']=build_number
+    build_props['jobName']=job_name
+    build_props['jobUrl']=job_url
+    build_props['jenkinsUrl']=jenkins_url
+    build_props['sourceControlSystem']=scm_type
+    build_props['sourceControlRevision']=scm_revision
+    build_props['branch']=scm_branch
+    build_props['revision']=scm_revision
+    build_props['commit']=scm_commit
+
+    json_props = json.dumps(build_props)
+
+    build_props_file = open("ci_props.json", "w")
+    build_props_file.write(json_props)
+
 
 
 def render_settings_template(debug=False):
