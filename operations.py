@@ -32,6 +32,8 @@ def fab_setup_paths():
         glassfish.setup_paths()
     elif env.lang == "play":
         play.setup_paths()
+    elif env.lang == "play2":
+        play2.setup_paths()
     elif env.lang == "static":
         static.setup_paths()
     else:
