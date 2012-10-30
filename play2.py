@@ -101,6 +101,6 @@ def deploy_play2(ref=None, debug=False, dirty=False):
 
     require("project_name", "project_version", "play2_bin")
     build_cmd = create_custom_command(env.play2_bin)
-    local_build_path = os.path.join("dist/", ''.join([env.project_name, '-', env.project_version]))
+    local_build_path = os.path.join("dist", ''.join([env.project_name, '-', env.project_version, os.sep]))
     operations.fetch_render_copy(ref, debug, dirty, True, build_cmd, local_build_path)
     restart()
