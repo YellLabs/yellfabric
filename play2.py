@@ -1,9 +1,7 @@
 import os
-import context_managers
-import utils
 import operations
 
-from fabric.api import env, require, cd, runs_once, sudo, abort, local, lcd
+from fabric.api import env, require, runs_once, sudo, local, lcd
 
 def create_custom_command(dist):
     """
@@ -116,6 +114,9 @@ def deploy_play2(ref=None, debug=False, dirty=False, dist=False):
 
     require("project_name", "project_version")
     build_cmd = create_custom_command(dist)
-    local_build_path = os.path.join("dist", ''.join([env.project_name, '-', env.project_version, os.sep]))
-    operations.fetch_render_copy(ref, debug, dirty, True, build_cmd, local_build_path)
+    local_build_path = os.path.join("dist",
+                                        ''.join([env.project_name,
+                                        '-', env.project_version, os.sep]))
+    operations.fetch_render_copy(ref, debug, dirty, True,
+                                     build_cmd, local_build_path)
     restart()
