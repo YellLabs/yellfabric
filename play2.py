@@ -5,24 +5,38 @@ import operations
 
 from fabric.api import env, require, cd, runs_once, sudo, abort, local, lcd
 
-def create_custom_command(play_bin, zip_bin="unzip"):
+def create_custom_command():
     """
-    Packages the project using `play dist` and unzips the resulting file.
+    Creates a custom build command executed in operations.fetch_render_copy
+    """
+    def build_cmd(tempdir):
+        package_dist()
+        extract_project()
+    return build_cmd
 
-    The lib/ directory contains all project code and deps.
+
+def extract_project(zip_bin="unzip"):
+    """
+    Extracts the archive created by `play dist`.
+
+    The resulting lib/ directory contains all project code and deps.
+    """
+
+    require("project_name", "project_version", "tempdir")
+    with lcd(os.path.join(env.tempdir,"dist")):
+        local("%s %s-%s.zip" % (zip_bin, env.project_name, env.project_version))
+
+
+def package_dist():
+    """
+    Runs `play dist` to produce a zip file with all project dependencies.
 
     Assumes play_bin is the play 2 binary.
-
-    Resulting function takes a 'tempdir' arg to match the definition in static.py
     """
 
-    require("project_name", "project_version")
-    def local_build_command(tempdir):
-        with lcd(tempdir):
-            local("%s dist" % (play_bin))
-            with lcd("dist"):
-                local("%s %s-%s.zip" % (zip_bin, env.project_name, env.project_version))
-    return local_build_command
+    require("play2_bin", "tempdir")
+    with lcd(env.tempdir):
+        local("%s dist" % (env.play2_bin))
 
 
 @runs_once
@@ -94,13 +108,16 @@ def stop_play():
     cmd = "supervisorctl stop play2-%s" % env.project_name
     sudo(cmd, shell=False)
 
-def deploy_play2(ref=None, debug=False, dirty=False):
+def deploy_play2(ref=None, debug=False, dirty=False, dist=False):
     """
     Standard Play 2 deployment actions.
     """
 
-    require("project_name", "project_version", "play2_bin")
-    build_cmd = create_custom_command(env.play2_bin)
+    require("project_name", "project_version")
+    if dist:
+        require("play2_bin")
+
+    build_cmd = create_custom_command()
     local_build_path = os.path.join("dist", ''.join([env.project_name, '-', env.project_version, os.sep]))
     operations.fetch_render_copy(ref, debug, dirty, True, build_cmd, local_build_path)
     restart()
