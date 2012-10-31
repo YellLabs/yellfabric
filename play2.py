@@ -5,12 +5,13 @@ import operations
 
 from fabric.api import env, require, cd, runs_once, sudo, abort, local, lcd
 
-def create_custom_command():
+def create_custom_command(dist):
     """
     Creates a custom build command executed in operations.fetch_render_copy
     """
     def build_cmd(tempdir):
-        package_dist()
+        if dist:
+            package_dist()
         extract_project()
     return build_cmd
 
@@ -114,10 +115,7 @@ def deploy_play2(ref=None, debug=False, dirty=False, dist=False):
     """
 
     require("project_name", "project_version")
-    if dist:
-        require("play2_bin")
-
-    build_cmd = create_custom_command()
+    build_cmd = create_custom_command(dist)
     local_build_path = os.path.join("dist", ''.join([env.project_name, '-', env.project_version, os.sep]))
     operations.fetch_render_copy(ref, debug, dirty, True, build_cmd, local_build_path)
     restart()
