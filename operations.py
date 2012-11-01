@@ -2,6 +2,7 @@ import java
 import python
 import glassfish
 import play
+import play2
 import static
 import utils
 
@@ -32,6 +33,8 @@ def fab_setup_paths():
         glassfish.setup_paths()
     elif env.lang == "play":
         play.setup_paths()
+    elif env.lang == "play2":
+        play2.setup_paths()
     elif env.lang == "static":
         static.setup_paths()
     else:
@@ -45,9 +48,12 @@ def scm_echo_info():
     pprint.pprint(utils.scm_get_info(env.scm_type))
 
 
-def rsync_from_local():
+def rsync_from_local(local_path):
     """
     Push a local checkout of the code to a remote machine.
+
+    local_subdir specifies the subdirectory of the project to be
+    synced (e.g. build/).
     """
 
     require("tempdir", "project_path", "sudo_user")
@@ -62,7 +68,7 @@ def rsync_from_local():
         rsync_opts = '--rsync-path="sudo -u %s rsync"' % env.sudo_user
 
     rsync_project(
-        local_dir="%s/" % env.tempdir,
+        local_dir=os.path.join(env.tempdir, local_path),
         remote_dir="%s/" % env.project_path,
         exclude=rsync_exclude,
         delete=True,
@@ -102,7 +108,8 @@ def fetch_from_repo():
         local("wget -O%s '%s'" % (name, url))
 
 
-def fetch_render_copy(ref=None, debug=False, dirty=False, copy_remote=False, build_local_cmd=None):
+def fetch_render_copy(ref=None, debug=False, dirty=False, copy_remote=False,
+                      build_local_cmd=None, local_path=""):
     """
     Fetch source code, render settings file, push remotely and delete checkout.
     """
@@ -122,7 +129,7 @@ def fetch_render_copy(ref=None, debug=False, dirty=False, copy_remote=False, bui
         build_local_cmd(env.tempdir)
 
     if copy_remote:
-        rsync_from_local()
+        rsync_from_local(local_path)
 
     utils.delete_source_conditional(env.tempdir, dirty)
 
