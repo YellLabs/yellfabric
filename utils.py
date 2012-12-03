@@ -15,7 +15,7 @@ import json
 from string import replace, Template
 from xml.dom import minidom
 
-from fabric.api import env, prompt, runs_once, sudo, local, puts, lcd
+from fabric.api import env, prompt, runs_once, sudo, local, puts, lcd, abort
 from fabric.context_managers import hide, cd, prefix
 #from fabric.contrib.files import append
 
@@ -58,10 +58,20 @@ def play_run(path, command, user):
 def supervisorctl(command, name):
     """
     Run a supervisorctl action against a given project.
+
+    Abort if the output contains ERROR.
     """
 
     cmd = "supervisorctl %s %s" % (command, name)
-    sudo(cmd, shell=False)
+    out = sudo(cmd, shell=False)
+
+    if command == "restart":
+        # We only care about the last item which is start.
+        out = out.split("\n")[-1]
+
+    # Supervisorctl doesn't support exit codes.
+    if "ERROR" in out:
+        abort(out)
 
 
 @runs_once
