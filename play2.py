@@ -71,8 +71,7 @@ def status():
 
     require("project_name")
 
-    cmd = "supervisorctl status play2-%s" % env.project_name
-    sudo(cmd, shell=False)
+    utils.supervisorctl("status", "play2-%s" % env.project_name)
 
 
 def restart():
@@ -82,8 +81,7 @@ def restart():
 
     require("project_name")
 
-    cmd = "supervisorctl restart play2-%s" % env.project_name
-    sudo(cmd, shell=False)
+    utils.supervisorctl("restart", "play2-%s" % env.project_name)
 
 
 def start_play():
@@ -93,8 +91,7 @@ def start_play():
 
     require("project_name")
 
-    cmd = "supervisorctl start play2-%s" % env.project_name
-    sudo(cmd, shell=False)
+    utils.supervisorctl("start", "play2-%s" % env.project_name)
 
     
 def stop_play():
@@ -104,8 +101,7 @@ def stop_play():
 
     require("project_name")
 
-    cmd = "supervisorctl stop play2-%s" % env.project_name
-    sudo(cmd, shell=False)
+    utils.supervisorctl("stop", "play2-%s" % env.project_name)
 
 def deploy_play2(ref=None, debug=False, dirty=False, dist=False):
     """

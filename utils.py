@@ -55,6 +55,15 @@ def play_run(path, command, user):
             sudo(cmd, user=user)
 
 
+def supervisorctl(command, name):
+    """
+    Run a supervisorctl action against a given project.
+    """
+
+    cmd = "supervisorctl %s %s" % (command, name)
+    sudo(cmd, shell=False)
+
+
 @runs_once
 def scm_get_ref(scm_type, use_default=False):
     if scm_type.lower() == "svn":
