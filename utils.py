@@ -52,7 +52,7 @@ def play_run(path, command, user):
         # Make absolutely sure resulting directories are readable by the
         # the Play process which runs as a different user.
         with prefix('umask 0002'):
-            sudo(cmd, user=user)
+            return sudo(cmd, user=user)
 
 
 def supervisorctl(command, name):

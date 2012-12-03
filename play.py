@@ -17,6 +17,8 @@ def setup_paths():
 def sync_deps():
     """
     Download project dependencies and sync modules/lib dirs.
+
+    Abort if there are any missing dependencies.
     """
 
     require(
@@ -26,7 +28,10 @@ def sync_deps():
         "sudo_user",
     )
     with context_managers.proxy(env.http_proxy, env.https_proxy):
-        utils.play_run(env.project_path, "dependencies --sync", user=env.sudo_user)
+        out = utils.play_run(env.project_path, "dependencies --sync", user=env.sudo_user)
+
+    if "WARNING" in out:
+        abort("Missing dependencies")
 
 
 def tail(stderr=False):
