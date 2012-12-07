@@ -254,14 +254,14 @@ def rollback_django(ref=None, debug=False, dirty=False):
 
         # Copy the new code... the one we want to back out, as we need the
         # migrations from this
-        fetch_render_copy(ref, debug, dirty)
+        operations.fetch_render_copy(ref, debug, dirty)
 
         # Rollback the database
         migratedb(True)
 
         # Get the old code
         del env['tempdir']
-        fetch_render_copy(env.scm_tag["rollback"], debug, dirty, True)
+        operations.fetch_render_copy(env.scm_tag["rollback"], debug, dirty, True)
 
         pip_requirements()
         refresh_wsgi()
