@@ -15,7 +15,7 @@ import json
 from string import replace, Template
 from xml.dom import minidom
 
-from fabric.api import env, prompt, runs_once, sudo, local, puts, lcd
+from fabric.api import env, prompt, runs_once, sudo, local, puts, lcd, abort
 from fabric.context_managers import hide, cd, prefix
 #from fabric.contrib.files import append
 
