@@ -1,0 +1,4 @@
+---
+language: python
+install: "pip install pylint"
+script: "pylint --errors-only yellfabric"
