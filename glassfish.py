@@ -53,7 +53,7 @@ def glassfish_service(action):
     """
 
     require("asadmin")
-    run("%s domain1" % (env.asadmin, action))
+    run("%s %s domain1" % (env.asadmin, action))
 
 def undeploy(application):
     """
