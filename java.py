@@ -60,6 +60,11 @@ def render_settings_template():
     for root, dirs, files in os.walk(source_dir):
         relative_path = os.path.relpath(root, source_dir)
 
+        for conf_dir in dirs:
+            conf_dir = os.path.join(target_dir, relative_path, conf_dir)
+            if not os.path.exists(conf_dir):
+                os.makedirs(conf_dir)
+
         for conf_file in files:
             conf_file = os.path.join(relative_path, conf_file)
             file_extension = os.path.splitext(conf_file)[1]
