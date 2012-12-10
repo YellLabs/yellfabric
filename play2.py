@@ -2,14 +2,14 @@ import os
 import operations
 import utils
 
-from fabric.api import env, require, runs_once, sudo, local, lcd
+from fabric.api import env, require, runs_once, sudo, local, lcd, abort
 
 def create_custom_command(dist):
     """
     Creates a custom build command executed in operations.fetch_render_copy
     """
     def build_cmd(tempdir):
-        if dist:
+        if dist is True:
             package_dist()
         extract_project()
     return build_cmd
@@ -108,6 +108,15 @@ def deploy_play2(ref=None, debug=False, dirty=False, dist=False):
     """
     Standard Play 2 deployment actions.
     """
+
+    # If 'dist' is supplied via command line, check its validity
+    if dist == 'True':
+        dist = True
+    if dist == 'False':
+        dist = False
+    # If we've failed to produce a boolean flag, abort
+    if dist is not True and dist is not False:
+        abort('dist argument must equal True or False')
 
     require("project_name", "project_version")
     build_cmd = create_custom_command(dist)
