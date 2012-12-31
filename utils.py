@@ -187,7 +187,7 @@ def fetch_source(scm_type, scm_url, scm_ref=None, dirty=False):
         # remove tab character after origin
         json_info = json_info.replace('\\t', ' ')
 
-        version_file = open("version", "w")
+        version_file = open(os.path.join(tempdir,"version"), "w")
         version_file.write(json_info)
 
     if "scm_path" in env:

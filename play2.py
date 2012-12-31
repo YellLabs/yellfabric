@@ -25,6 +25,11 @@ def extract_project(zip_bin="unzip"):
     require("project_name", "project_version", "tempdir")
     with lcd(os.path.join(env.tempdir,"dist")):
         local("%s %s-%s.zip" % (zip_bin, env.project_name, env.project_version))
+        
+        # adding the version file to the folder rsynced with server
+        version_file_dir = os.path.join(env.tempdir, "dist/%s-%s" % (env.project_name, env.project_version))
+        local("pwd")
+        local("cp %s/version %s/version" % (env.tempdir, version_file_dir))        
 
 
 def package_dist():
