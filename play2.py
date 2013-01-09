@@ -1,6 +1,7 @@
 import os
 import operations
 import utils
+from shutil import copy
 
 from fabric.api import env, require, runs_once, sudo, local, lcd, abort
 
@@ -28,8 +29,10 @@ def extract_project(zip_bin="unzip"):
         
         # adding the version file to the folder rsynced with server
         version_file_dir = os.path.join(env.tempdir, "dist/%s-%s" % (env.project_name, env.project_version))
-        local("pwd")
-        local("cp %s/version %s/version" % (env.tempdir, version_file_dir))        
+
+        src = "%s/version" % env.tempdir
+        dst = "%s/version" % version_file_dir
+        copy(src, dst)
 
 
 def package_dist():
