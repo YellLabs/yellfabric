@@ -1,1 +1,2 @@
-Fabric >= 1.2.0
+# Sticking with 1.4 due to issue #20
+Fabric < 1.5.0
