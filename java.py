@@ -25,7 +25,17 @@ def setup_paths():
 
     env.tomcat_deploy_webapp = "/usr/local/sbin/deploy_tomcat_webapp.py"
 
-    env.app_config_dir = os.path.join(env.java_conf, env.get("config_dir_name", "project_name"))
+    try:
+        env.config_dir_name
+    except NameError:
+        env.config_dir_name = None
+    except AttributeError:
+        env.config_dir_name = None
+
+    if env.config_dir_name is None:
+        env.config_dir_name = env.project_name
+    env.app_config_dir = os.path.join(env.java_conf, env.config_dir_name)
+    env.app_xml_config_dir = os.path.join(env.java_conf, env.project_name)
     env.log_dir = os.path.join(env.java_log, env.project_name)
 
 
@@ -91,6 +101,14 @@ def deploy_java():
         "%s/" % env.deploy_config_dir,
         env.sudo_user,
         delete=True,
+    )
+
+    require("app_xml_config_dir", "deploy_config_dir")
+    rsync_as_user(
+        "%s/" % env.app_xml_config_dir,
+        "%s/" % env.deploy_config_dir,
+        env.sudo_user,
+        delete=True
     )
 
     require("war_file", "war_path")
