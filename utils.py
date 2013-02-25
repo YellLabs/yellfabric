@@ -283,7 +283,12 @@ def template_to_file(source, target, context):
     with open(target, "w") as target_file:
         with open(source) as source_file:
             if env.get('template_key') == '$':
-                text = Template(source_file.read()).substitute(context)
+                text = DottedIdAllowedTemplate(source_file.read()).substitute(context)
             else:
                 text = source_file.read() % context
         target_file.write(text)
+
+
+
+class DottedIdAllowedTemplate(Template):
+    idpattern = r'[a-z][\._a-z0-9]*'
