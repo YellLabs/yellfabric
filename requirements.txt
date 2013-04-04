@@ -1,2 +1,3 @@
 # Sticking with 1.4 due to issue #20
 Fabric < 1.5.0
+boto==2.8.0
