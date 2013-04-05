@@ -173,8 +173,7 @@ def fetch_source(scm_type, scm_url, scm_ref=None, dirty=False):
                         local("git checkout -b %s %s" % (scm_ref, scm_ref))
                     except:
                         # Remote branch
-                        local("git remote update")
-                        local("git fetch")
+                        local("git fetch --depth=1")
                         local("git checkout -b %s origin/%s" % (scm_ref, scm_ref))
 
     #
