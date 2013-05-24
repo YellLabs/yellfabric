@@ -165,16 +165,9 @@ def fetch_source(scm_type, scm_url, scm_ref=None, dirty=False):
                     ),
             )
         elif scm_type.lower() == "git":
-            local("git clone --depth 1 %s %s" % (env.scm_url, tempdir))
-            if scm_ref != "master":
-                with lcd(tempdir):
-                    try:
-                        # Remote tag
-                        local("git checkout -b %s %s" % (scm_ref, scm_ref))
-                    except:
-                        # Remote branch
-                        local("git fetch --depth=1")
-                        local("git checkout -b %s origin/%s" % (scm_ref, scm_ref))
+            # should only pull latest revision off a tag/branch
+            git_branch = scm_ref if scm_ref else 'master'
+            local("git clone --depth 1 --branch %s %s %s" % (git_branch, env.scm_url, tempdir))
 
     #
     # Write out the version info
