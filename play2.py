@@ -69,6 +69,8 @@ def tail(stderr=False):
 
     if stderr:
         cmd += " stderr"
+    else:
+        cmd += " stdout"
 
     sudo(cmd, shell=False)
 
