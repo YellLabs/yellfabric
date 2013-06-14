@@ -12,9 +12,16 @@ def create_custom_command(dist):
     def build_cmd(tempdir):
         if dist is True:
             package_dist()
-        extract_project()
+            extract_project()
+        else:
+            stage_project()
     return build_cmd
 
+def stage_project():
+    # Follows best practice as of http://www.playframework.com/documentation/2.0/Production
+    require("play2_bin", "tempdir")
+    with lcd(env.tempdir):
+        local("%s clean compile stage" % (env.play2_bin))
 
 def extract_project(zip_bin="unzip"):
     """
@@ -136,9 +143,13 @@ def deploy_play2(ref=None, debug=False, dirty=False, dist=False):
 
     require("project_name", "project_version")
     build_cmd = create_custom_command(dist)
-    local_build_path = os.path.join("dist",
+
+    local_build_path= ""
+    if dist:
+        local_build_path = os.path.join("dist",
                                         ''.join([env.project_name,
                                         '-', env.project_version, os.sep]))
+
     operations.fetch_render_copy(ref, debug, dirty, True,
                                      build_cmd, local_build_path)
     restart()
