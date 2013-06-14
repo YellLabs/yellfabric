@@ -67,10 +67,16 @@ def tail(stderr=False):
 
     cmd = "supervisorctl tail play2-%s" % env.project_name
 
-    if stderr:
-        cmd += " stderr"
-    else:
-        cmd += " stdout"
+    # If 'stderr' is supplied via command line, check its validity
+    if stderr == 'True':
+        stderr = True
+    if stderr == 'False':
+        stderr = False
+    # If we've failed to produce a boolean flag, abort
+    if stderr is not True and stderr is not False:
+        abort('stderr argument must equal True or False')
+
+    cmd += " stderr" if stderr else " stdout"
 
     sudo(cmd, shell=False)
 
